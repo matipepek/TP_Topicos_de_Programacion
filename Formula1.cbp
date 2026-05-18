@@ -31,9 +31,21 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="carreras.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="carreras.h" />
+		<Unit filename="escuderias.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="escuderias.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="pilotos.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pilotos.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
