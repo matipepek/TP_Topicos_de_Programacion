@@ -28,6 +28,7 @@ int crearLoteEscuderias(const char* nombrearchivo)
         fprintf(pf, "%u|%s|%s|%s|%d\n", pEscuderias->id, pEscuderias->codigo, pEscuderias->nombre, pEscuderias->pais, pEscuderias->estado);
         pEscuderias++;
     }
+    fclose(pf);
     return TODO_OK;
 
 }

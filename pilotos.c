@@ -50,5 +50,68 @@ int crearLotePilotos(const char* nombrearchivo)
         fprintf(pf, "%u|%s|%s|%u|%u|%c|%llu\n", pPilotos->id, pPilotos->nombre, pPilotos->nacionalidad, pPilotos->id_escuderia, pPilotos->puntos_acumulados, pPilotos->estado, pPilotos->fechaNacimiento);
         pPilotos++;
     }
+    fclose(pf);
     return TODO_OK;
 }
+
+int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorigen)
+{
+    tPiloto Pilotos;
+    char cadena[BUFFER];
+    FILE* pf = fopen(nombrearchivoorigen, "rt");
+    FILE* pf2 = fopen(nombrearchivodestino, "wb");
+
+    if(!pf || !pf2)
+    {
+        return ERROR_APERTURA;
+    }
+
+    while(fgets(cadena, BUFFER, pf))
+    {
+        trozadoCampoVariablePilotos(cadena, &Pilotos);
+        mostrarPilotos(&Pilotos);
+        fwrite(&Pilotos, sizeof(Pilotos), 1, pf2);
+    }
+
+    fclose(pf);
+    fclose(pf2);
+    return TODO_OK;
+}
+
+void trozadoCampoVariablePilotos(char* cadena,tPiloto* piloto)
+{
+    char * aux;
+    aux = strchr(cadena, '\n');
+    *aux = '\0';
+    aux = strrchr(cadena, '|');
+    sscanf(aux+1,"%llu",&piloto->fechaNacimiento);
+    *aux = '\0';
+    aux = strrchr(cadena, '|');
+    sscanf(aux+1,"%c",&piloto->estado);
+    *aux = '\0';
+    aux = strrchr(cadena, '|');
+    sscanf(aux+1,"%u",&piloto->puntos_acumulados);
+    *aux = '\0';
+    aux = strrchr(cadena, '|');
+    sscanf(aux+1,"%u",&piloto->id_escuderia);
+    *aux = '\0';
+    aux = strrchr(cadena, '|');
+    strcpy(piloto->nacionalidad, aux+1);
+    *aux = '\0';
+    aux = strrchr(cadena, '|');
+    strcpy(piloto->nombre, aux+1);
+    *aux = '\0';
+    sscanf(cadena,"%u",&piloto->id);
+}
+
+void mostrarPilotos(tPiloto* pilotos)
+{
+        printf("%u|%s|%s|%u|%u|%c|%llu\n",  pilotos->id,
+                                            pilotos->nombre,
+                                            pilotos->nacionalidad,
+                                            pilotos->id_escuderia,
+                                            pilotos->puntos_acumulados,
+                                            pilotos->estado,
+                                            pilotos->fechaNacimiento);
+}
+
