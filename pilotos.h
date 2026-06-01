@@ -18,5 +18,5 @@ typedef struct
     unsigned long long fechaNacimiento;
 } tPiloto;
 
-int CrearLotePilotos(const char* nombrearchivo);
+int crearLotePilotos(const char* nombrearchivo);
 #endif // PILOTOS_H_INCLUDED

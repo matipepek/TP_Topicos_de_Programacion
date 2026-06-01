@@ -1,6 +1,6 @@
 #include "pilotos.h"
 
-int CrearLotePilotos(const char* nombrearchivo)
+int crearLotePilotos(const char* nombrearchivo)
 {
     tPiloto Pilotos[] = {
     {1,  "Lando Norris",      "Reino Unido", 1, 0, 'A', 19991113},
