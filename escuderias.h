@@ -4,9 +4,9 @@
 typedef struct
 {
     unsigned id;
-    char[4] codigo;
-    char[30] nombre;
-    char[50] pais;
+    char codigo[4];
+    char nombre[30];
+    char pais[50];
     int estado;     //(1: Activo, 0: inactivo)
 } tEscuderia;
 

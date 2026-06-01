@@ -4,7 +4,7 @@
 typedef struct
 {
     int id;
-    char[20] circuito;
+    char circuito[20];
     unsigned long long fecha;
     int estado;
     int Cant_resultados;
