@@ -30,5 +30,59 @@ int crearLoteEscuderias(const char* nombrearchivo)
     }
     fclose(pf);
     return TODO_OK;
-
 }
+
+int escuderiasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen)
+{
+    tEscuderia Escuderias;
+    char cadena[BUFFER];
+    FILE* pf = fopen(nombrearchivoorigen, "rt");
+    FILE* pf2 = fopen(nombrearchivodestino, "wb");
+
+    if(!pf || !pf2)
+    {
+        return ERROR_APERTURA;
+    }
+
+    while(fgets(cadena, BUFFER, pf))
+    {
+        trozadoCampoVariableEscuderias(cadena, &Escuderias);
+        mostrarEscuderias(&Escuderias);
+        fwrite(&Escuderias, sizeof(Escuderias), 1, pf2);
+    }
+
+    fclose(pf);
+    fclose(pf2);
+    return TODO_OK;
+}
+
+void trozadoCampoVariableEscuderias(char* cadena,tEscuderia* escuderia)
+{
+    char * aux;
+    aux = strchr(cadena, '\n');
+    *aux = '\0';
+    aux = strrchr(cadena, '|');
+    sscanf(aux+1,"%d",&escuderia->estado);
+    *aux = '\0';
+    aux = strrchr(cadena, '|');
+    strcpy(escuderia->pais, aux+1);
+    *aux = '\0';
+    aux = strrchr(cadena, '|');
+    strcpy(escuderia->nombre, aux+1);
+    *aux = '\0';
+    aux = strrchr(cadena, '|');
+    strcpy(escuderia->codigo, aux+1);
+    *aux = '\0';
+    sscanf(cadena,"%u",&escuderia->id);
+}
+
+void mostrarEscuderias(tEscuderia* escuderias)
+{
+        printf("%u|%s|%s|%s|%d\n",          escuderias->id,
+                                            escuderias->codigo,
+                                            escuderias->nombre,
+                                            escuderias->pais,
+                                            escuderias->estado);
+}
+
+

@@ -3,9 +3,11 @@
 
 #define ERROR_APERTURA -2
 #define TODO_OK 1
+#define BUFFER 200
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 typedef struct
 {
@@ -17,5 +19,7 @@ typedef struct
 } tEscuderia;
 
 int crearLoteEscuderias(const char* nombrearchivo);
-
+int escuderiasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);
+void trozadoCampoVariableEscuderias(char* cadena,tEscuderia* escuderia);
+void mostrarEscuderias(tEscuderia* escuderias);
 #endif // ESCUDERIAS_H_INCLUDED
