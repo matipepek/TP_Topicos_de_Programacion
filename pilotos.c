@@ -115,3 +115,24 @@ void mostrarPilotos(tPiloto* pilotos)
                                             pilotos->fechaNacimiento);
 }
 
+// 1. listar pilotos y sus puntos
+
+int listarPilotosyPuntos(const char* nombrearchivo)
+{
+    tPiloto* piloto = malloc(sizeof(tPiloto));
+    if (!piloto)
+        return ERROR_SIN_MEMORIA;
+
+    FILE* pf = fopen(nombrearchivo, "rb");
+    if(!pf)
+        return ERROR_APERTURA;
+
+    while(fread(piloto, sizeof(*piloto),1,pf))
+    {
+        printf("%s|%-u\n",  piloto->nombre,
+                            piloto->puntos_acumulados);
+    }
+    fclose(pf);
+    free(piloto);
+    return TODO_OK;
+}

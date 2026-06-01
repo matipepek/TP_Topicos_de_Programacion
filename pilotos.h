@@ -2,6 +2,7 @@
 #define PILOTOS_H_INCLUDED
 
 #define ERROR_APERTURA -2
+#define ERROR_SIN_MEMORIA -1
 #define TODO_OK 1
 #define BUFFER 200
 
@@ -24,4 +25,6 @@ int crearLotePilotos(const char* nombrearchivo);
 int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);
 void trozadoCampoVariablePilotos(char* cadena,tPiloto* piloto);
 void mostrarPilotos(tPiloto* pilotos);
+
+int listarPilotosyPuntos(const char* nombrearchivo);
 #endif // PILOTOS_H_INCLUDED
