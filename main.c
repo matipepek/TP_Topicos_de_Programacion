@@ -8,7 +8,7 @@ int main(int argc, char* argv[])
     int estado;
     do{
         printf("\n");
-        printf("0. salir\n");
+        printf("0. Salir\n");
         printf("1. Listar pilotos y sus puntos\n");
         printf("2. Registrar una carrera (ingreso de posiciones)\n");
         printf("3. Calcular y actualizar puntos automaticamente\n");
@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
         printf("6. Calcular estadisticas de pilotos\n");
         printf("7. Exportar datos a archivos de texto\n");
         printf("Ingrese opcion: ");
-        scanf("%d",&estado);
+        scanf("%d", &estado);
         printf("\n");
         switch (estado)
         {
@@ -27,6 +27,8 @@ int main(int argc, char* argv[])
                 listarPilotosyPuntos("pilotos.bin");
                 break;
             case 2:
+                registrarCarrera("carreras.dat");
+                //verificarCarrerasDat("carreras.dat");
                 break;
             case 3:
                 break;
