@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
             case 3:
                 break;
             case 4:
+                mostrarRankingPilotos("pilotos.bin", "escuderias.bin");
                 break;
             case 5:
                 break;

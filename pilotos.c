@@ -1,4 +1,24 @@
 #include "pilotos.h"
+#include "escuderias.h"
+
+void ordenamientoBurbuja(tPiloto* vPiloto, size_t ce)
+{
+    size_t i, j;
+    tPiloto auxPiloto;
+
+    for(i=0; i<ce - 1; i++)
+    {
+        for(j=0; j<ce - i - 1; j++)
+        {
+            if(((vPiloto + j)->puntos_acumulados) < ((vPiloto + j + 1)->puntos_acumulados))
+            {
+                auxPiloto = *(vPiloto + j);
+                *(vPiloto + j) = *(vPiloto + j + 1);
+                *(vPiloto + j + 1) = auxPiloto;
+            }
+        }
+    }
+}
 
 int crearLotePilotos(const char* nombrearchivo)
 {
@@ -134,5 +154,97 @@ int listarPilotosyPuntos(const char* nombrearchivo)
     }
     fclose(pf);
     free(piloto);
+    return TODO_OK;
+}
+
+// 4. Mostrar ranking de pilotos (ordenado) de la temporada en cuestión.
+
+char* devuelveNombreEscuderia(tEscuderia* vEscuderia, unsigned idBuscado, size_t ce)
+{
+    size_t i;
+    for(i=0; i<ce; i++)
+    {
+        if((vEscuderia + i)->id == idBuscado)
+            return (vEscuderia + i)->nombre;
+    }
+
+    return NULL;
+}
+
+int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias)
+{
+    int cantActivos = 0, i;
+    FILE* pPilotos = fopen(archPilotos, "rb"); // Abro archivo para plasmar los datos en un vector dinámico.
+    FILE* pEscuderias = fopen(archEscuderias, "rb"); // Abro archivo para plasmar los datos en un vector dinámico, y buscar el nombre de escudería por id.
+
+    if(!pPilotos)
+        return ERROR_APERTURA;
+
+    if(!pEscuderias)
+    {
+        fclose(pPilotos);
+        return ERROR_APERTURA;
+    }
+
+    fseek(pPilotos, 0, SEEK_END);
+    size_t tam = ftell(pPilotos);
+    fseek(pPilotos, 0, SEEK_SET);
+
+    fseek(pEscuderias, 0, SEEK_END);
+    size_t tamEsc = ftell(pEscuderias);
+    fseek(pEscuderias, 0, SEEK_SET);
+
+    size_t ce = tam / sizeof(tPiloto);
+    size_t ceEsc = tamEsc / sizeof(tEscuderia);
+
+    tPiloto* vPiloto = (tPiloto*)malloc(ce * sizeof(tPiloto));
+    if(!vPiloto)
+    {
+        fclose(pPilotos);
+        return ERROR_SIN_MEMORIA;
+    }
+
+    tPiloto vAuxPiloto; // Creo un auxiliar para filtrar los activos de los retirados.
+
+    fread(&vAuxPiloto, sizeof(tPiloto), 1, pPilotos);
+    while(!feof(pPilotos))
+    {
+        if(vAuxPiloto.estado == 'A')
+        {
+            *(vPiloto + cantActivos) = vAuxPiloto;
+            cantActivos++;
+        }
+
+        fread(&vAuxPiloto, sizeof(tPiloto), 1, pPilotos);
+    }
+
+    fclose(pPilotos);
+
+    tEscuderia* vEscuderia = (tEscuderia*)malloc(ceEsc * sizeof(tEscuderia));
+    if(!vEscuderia)
+    {
+        fclose(pEscuderias);
+        free(vPiloto);
+        return ERROR_SIN_MEMORIA;
+    }
+
+    fread(vEscuderia, sizeof(tEscuderia), ceEsc, pEscuderias);
+
+    fclose(pEscuderias);
+
+    ordenamientoBurbuja(vPiloto, cantActivos);
+
+    printf("\n---- %35s %25s\n", "Ranking de Pilotos", "----");
+    printf("\n%-4s | %-25s | %-20s | %-7s\n", "N", "Nombre", "Escuderia", "Puntaje");
+    printf("------------------------------------------------------------------\n");
+
+    for(i=0; i<cantActivos; i++)
+    {
+        printf("%-4d | %-25s | %-20s | %-7u\n", i + 1, (vPiloto + i)->nombre, devuelveNombreEscuderia(vEscuderia, (vPiloto + i)->id_escuderia, ceEsc), (vPiloto + i)->puntos_acumulados);
+    }
+
+    free(vPiloto);
+    free(vEscuderia);
+
     return TODO_OK;
 }
