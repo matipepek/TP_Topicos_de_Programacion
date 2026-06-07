@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "pilotos.h"
 #include "escuderias.h"
 #include "carreras.h"

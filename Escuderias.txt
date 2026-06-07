@@ -1,0 +1,11 @@
+1|MCL|McLaren|Reino Unido|1
+2|MER|Mercedes|Alemania|1
+3|FER|Ferrari|Italia|1
+4|RBR|Red Bull|Austria|1
+5|AMR|Aston Martin|Reino Unido|1
+6|WIL|Williams|Reino Unido|1
+7|ALP|Alpine|Francia|1
+8|HAS|Haas|Estados Unidos|1
+9|RBT|Racing Bulls|Italia|1
+10|AUD|Audi|Alemania|1
+11|CAD|Cadillac|Estados Unidos|1
