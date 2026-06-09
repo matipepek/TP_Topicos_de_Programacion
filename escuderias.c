@@ -1,4 +1,5 @@
 #include "escuderias.h"
+#include "pilotos.h"
 
 int crearLoteEscuderias(const char* nombrearchivo)
 {
