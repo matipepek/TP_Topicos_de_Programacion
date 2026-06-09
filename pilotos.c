@@ -146,27 +146,27 @@ void mostrarPilotos(tPiloto* pilotos)
 
 int listarPilotosyPuntos(const char* nombrearchivo)
 {
-    tPiloto* piloto = malloc(sizeof(tPiloto));
-    if (!piloto)
-        return ERROR_SIN_MEMORIA;
+    tPiloto piloto;
 
     FILE* pf = fopen(nombrearchivo, "rb");
     if(!pf)
         return ERROR_APERTURA;
 
-    printf("Pilotos             |puntos\n");
-    printf("-----------------------------\n");
-    while(fread(piloto, sizeof(*piloto),1,pf))
+    printf("\n=====================================\n");
+    printf("%-25s | %8s\n", "Piloto", "Puntos");
+    printf("=====================================\n");
+
+    while(fread(&piloto, sizeof(tPiloto),1,pf))
     {
-        if(piloto->estado == 'A')
+        if(piloto.estado == 'A')
         {
-            printf("%-20s|%-u\n",   piloto->nombre,
-                                    piloto->puntos_acumulados);
+            printf("%-25s | %8u\n",     piloto.nombre,
+                                        piloto.puntos_acumulados);
         }
 
     }
+    printf("=====================================\n");
     fclose(pf);
-    free(piloto);
     return TODO_OK;
 }
 
