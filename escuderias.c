@@ -85,4 +85,79 @@ void mostrarEscuderias(tEscuderia* escuderias)
                                             escuderias->estado);
 }
 
+void MostrarpilotosXEscuderia(const char* nombrearchivo1, const char* nombrearchivo2)
+{
+    FILE* pf=fopen(nombrearchivo1,"rb");
+    FILE* pf2=fopen(nombrearchivo2,"rb");
+
+    if(pf==NULL || pf2==NULL)
+    {
+        return ERROR_APERTURA;
+    }
+
+    int pilotosencontrados=0;
+    int idseleccionado;
+    char nombreescuderia[30]="";
+    tEscuderia Escuderias;
+    tPiloto Pilotos;
+
+    printf("\n========================================\n");
+    printf("       ESCUDERIAS DISPONIBLES\n");
+    printf("========================================\n");
+
+
+    fread(&Escuderias,sizeof(tEscuderia),1,pf);
+    while(!feof(pf))
+    {
+        if(Escuderias.estado==1)
+        {
+            printf("ID:%d | %s\n",Escuderias.id,Escuderias.nombre);
+        }
+        fread(&Escuderias,sizeof(tEscuderia),1,pf);
+    }
+
+    printf("----------------------------------------\n");
+    printf("Ingrese el codigo de la escuderia para ver sus pilotos (0 para salir):");
+    scanf("%d",&idseleccionado);
+    while(idseleccionado!=0)
+    {
+        rewind(pf);
+        fread(&Escuderias,sizeof(tEscuderia),1,pf);
+        while(!feof(pf))
+        {
+            if(Escuderias.estado==1&&(Escuderias.id==idseleccionado))
+            {
+                strcpy(nombreescuderia,Escuderias.nombre);
+            }
+            fread(&Escuderias,sizeof(tEscuderia),1,pf);
+        }
+        printf("\n========================================\n");
+        printf(" PILOTOS DE LA ESCUDERIA: %s\n",nombreescuderia);
+        printf("========================================\n");
+
+        rewind(pf2);
+        fread(&Pilotos,sizeof(tPiloto),1,pf2);
+        while(!feof(pf2))
+        {
+            if(Pilotos.estado=='A'&&(Pilotos.id_escuderia==idseleccionado))
+            {
+                printf("  - %s (Puntos: %d)\n", Pilotos.nombre, Pilotos.puntos_acumulados);
+                pilotosencontrados++;
+            }
+                fread(&Pilotos,sizeof(tPiloto),1,pf2);
+        }
+        if(pilotosencontrados==0)
+        {
+            printf("(No se encontraron pilotos activos para esta escuderÃa)\n");
+        }
+
+        printf("----------------------------------------\n");
+        printf("Ingrese el codigo de la escuderia para ver sus pilotos (0 para salir):");
+        scanf("%d",&idseleccionado);
+    }
+    printf("========================================\n");
+    fclose(nombrearchivo1);
+    fclose(nombrearchivo2);
+}
+
 
