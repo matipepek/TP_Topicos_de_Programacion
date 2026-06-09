@@ -148,7 +148,7 @@ void MostrarpilotosXEscuderia(const char* nombrearchivo1, const char* nombrearch
         }
         if(pilotosencontrados==0)
         {
-            printf("(No se encontraron pilotos activos para esta escuderÃa)\n");
+            printf("No se encontraron pilotos activos para esta escuderia\n");
         }
 
         printf("----------------------------------------\n");
