@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
             case 4:
                 break;
             case 5:
+                MostrarpilotosXEscuderia("Escuderias.bin","pilotos.bin");
                 break;
             case 6:
                 break;
