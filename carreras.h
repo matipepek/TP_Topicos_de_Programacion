@@ -5,6 +5,8 @@
 #define ERROR_SIN_MEMORIA -1
 #define TODO_OK 1
 
+#include <stdio.h>
+#include <stdlib.h>
 typedef struct
 {
     int id;
@@ -14,6 +16,16 @@ typedef struct
     int Cant_resultados;
     void** resultados;  //Matriz que contenga los resultados
 } tCarreras;
+
+typedef struct
+{
+    int id_piloto;
+    int carreras_corridas;
+    int victorias;
+    int mejor_posicion;
+    int peor_posicion;
+    int suma_posiciones;
+} tEstadisticaPiloto;
 
 void limpiarSalto(char* cadena);
 int registrarCarrera(const char* nombreArchivo);

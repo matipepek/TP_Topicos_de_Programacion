@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "pilotos.h"
 
 typedef struct
 {
@@ -22,5 +23,6 @@ int crearLoteEscuderias(const char* nombrearchivo);
 int escuderiasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);
 void trozadoCampoVariableEscuderias(char* cadena,tEscuderia* escuderia);
 void mostrarEscuderias(tEscuderia* escuderias);
-void MostrarpilotosXEscuderia(const char* nombrearchivo1, const char* nombrearchivo2);
+char* devuelveNombreEscuderia(tEscuderia* vEscuderia, unsigned idBuscado, size_t ce);
+int MostrarpilotosXEscuderia(const char* nombrearchivo1, const char* nombrearchivo2);
 #endif // ESCUDERIAS_H_INCLUDED

@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "escuderias.h"
 
 typedef struct
 {
@@ -21,10 +22,18 @@ typedef struct
     unsigned long long fechaNacimiento;
 } tPiloto;
 
+void ordenamientoBurbuja(tPiloto* vPiloto, size_t ce); // Necesitado para el punto 4.
+
+
 int crearLotePilotos(const char* nombrearchivo);
 int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);
 void trozadoCampoVariablePilotos(char* cadena,tPiloto* piloto);
 void mostrarPilotos(tPiloto* pilotos);
 
-int listarPilotosyPuntos(const char* nombrearchivo);
+
+
+int listarPilotosyPuntos(const char* nombrearchivo); // Punto 1
+
+
+int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias); // Punto 4
 #endif // PILOTOS_H_INCLUDED

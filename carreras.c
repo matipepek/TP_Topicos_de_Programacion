@@ -1,6 +1,5 @@
 #include "carreras.h"
-#include <stdio.h>
-#include <stdlib.h>
+
 
 void limpiarSalto(char* cadena)
 {
