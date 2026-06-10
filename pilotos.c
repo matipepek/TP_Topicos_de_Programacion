@@ -151,19 +151,20 @@ int listarPilotosyPuntos(const char* nombrearchivo)
     FILE* pf = fopen(nombrearchivo, "rb");
     if(!pf)
         return ERROR_APERTURA;
-
+    rewind(pf);
     printf("\n=====================================\n");
     printf("%-25s | %8s\n", "Piloto", "Puntos");
     printf("=====================================\n");
 
-    while(fread(&piloto, sizeof(tPiloto),1,pf))
+    fread(&piloto, sizeof(tPiloto),1,pf);
+    while(!feof(pf))
     {
         if(piloto.estado == 'A')
         {
             printf("%-25s | %8u\n",     piloto.nombre,
                                         piloto.puntos_acumulados);
         }
-
+        fread(&piloto, sizeof(tPiloto),1,pf);
     }
     printf("=====================================\n");
     fclose(pf);

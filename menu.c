@@ -38,6 +38,7 @@ void menu()
                 mostrarRankingPilotos("pilotos.bin", "escuderias.bin");
                 break;
             case 5:
+                MostrarpilotosXEscuderia("escuderias.bin","pilotos.bin");
                 break;
             case 6:
                 break;

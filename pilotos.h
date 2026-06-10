@@ -29,7 +29,7 @@ int crearLotePilotos(const char* nombrearchivo);
 int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);
 void trozadoCampoVariablePilotos(char* cadena,tPiloto* piloto);
 void mostrarPilotos(tPiloto* pilotos);
-char* devuelveNombreEscuderia(tEscuderia* vEscuderia, unsigned idBuscado, size_t ce);
+
 
 
 int listarPilotosyPuntos(const char* nombrearchivo); // Punto 1
