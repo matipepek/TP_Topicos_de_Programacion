@@ -173,18 +173,6 @@ int listarPilotosyPuntos(const char* nombrearchivo)
 
 // 4. Mostrar ranking de pilotos (ordenado) de la temporada en cuestión.
 
-char* devuelveNombreEscuderia(tEscuderia* vEscuderia, unsigned idBuscado, size_t ce)
-{
-    size_t i;
-    for(i=0; i<ce; i++)
-    {
-        if((vEscuderia + i)->id == idBuscado)
-            return (vEscuderia + i)->nombre;
-    }
-
-    return NULL;
-}
-
 int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias)
 {
     int cantActivos = 0, i;
@@ -261,4 +249,17 @@ int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias)
     free(vEscuderia);
 
     return TODO_OK;
+}
+
+int buscaPiloto(const tPiloto* vPiloto, int cantPilotos, unsigned id)
+{
+    int i;
+
+    for(i=0; i<cantPilotos; i++)
+    {
+        if((vPiloto + i)->id == id)
+            return i;
+    }
+
+    return -1;
 }

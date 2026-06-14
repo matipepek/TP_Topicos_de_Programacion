@@ -7,6 +7,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "pilotos.h"
+
 typedef struct
 {
     int id;
@@ -28,7 +30,16 @@ typedef struct
 } tEstadisticaPiloto;
 
 void limpiarSalto(char* cadena);
-int registrarCarrera(const char* nombreArchivo);
+int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const char* archEstadisticas); // Punto 2
 void verificarCarrerasDat(const char* nombreArchivo);
+unsigned obtenerPuntos(unsigned posicion); // Auxiliar Punto 3
+int buscaEstadistica(const tEstadisticaPiloto* vEstadistica, int cantPilotos, unsigned id); // Auxiliar Punto 3
+int actualizarPuntosEstadisticas(const char* archPilotos, const char* archEstadisticas, tCarreras vCarrera); // Punto 3 + Sistema incremental de estadísticas
+int verificaPuntosStats(const char* archPilotos, const char* archEstadisticas); // Auxiliar Punto 3 (se puede borrar)
+
+// Lote de pruebas para estadisticas, se puede borrar
+int crearLoteEstadisticas(const char* archEstadisticas);
+int estadisticasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);
+void trozadoCampoVariableEstadisticas(char* cadena, tEstadisticaPiloto* vEstadisticas);
 
 #endif // CARRERAS_H_INCLUDED

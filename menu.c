@@ -29,7 +29,7 @@ void menu()
                 listarPilotosyPuntos("pilotos.bin");
                 break;
             case 2:
-                registrarCarrera("carreras.dat");
+                registrarCarrera("carreras.dat", "pilotos.bin", "estadisticas.bin");
                 //verificarCarrerasDat("carreras.dat");
                 break;
             case 3:
