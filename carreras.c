@@ -19,6 +19,7 @@ int registrarCarrera(const char* nombreArchivo)
     FILE* pf;
     int i;
     int** matriz;
+    int* bloqueDatos; // Puntero auxiliar para el bloque de memoria contigua
 
     printf("Registro de nueva carrera\n");
 
@@ -46,15 +47,24 @@ int registrarCarrera(const char* nombreArchivo)
 
     matriz = (int**)carrera.resultados;
 
+    bloqueDatos = (int*)malloc(carrera.Cant_resultados * 2 * sizeof(int));
+    if(!bloqueDatos)
+    {
+        free(carrera.resultados);
+        return ERROR_SIN_MEMORIA;
+
+    matriz = (int**)carrera.resultados;
+
+    //Conectamos cada puntero del estante a su sector en el bloque gigante
+    for(i = 0; i < carrera.Cant_resultados; i++)
+    {
+        matriz[i] = bloqueDatos + (i * 2);
+    }
+
     printf("\nIngreso de posiciones\n");
 
     for(i = 0; i < carrera.Cant_resultados; i++)
     {
-        // Asignamos memoria para los dos enteros de la fila actual
-        matriz[i] = malloc(2 * sizeof(int));
-        if(!matriz[i])
-            return ERROR_SIN_MEMORIA;
-
         //Posicion de llegada (columna 0)
         matriz[i][0] = i + 1;
 
@@ -66,6 +76,8 @@ int registrarCarrera(const char* nombreArchivo)
     pf = fopen(nombreArchivo, "ab");
     if (!pf)
     {
+        free(bloqueDatos);
+        free(carrera.resultados);
         return ERROR_APERTURA;
     }
 
@@ -76,13 +88,9 @@ int registrarCarrera(const char* nombreArchivo)
     fwrite(&carrera.estado, sizeof(int), 1, pf);
     fwrite(&carrera.Cant_resultados, sizeof(int), 1, pf);
 
-    //Guardamos el contenido de la matriz dinamica fila por fila
-    for(i = 0; i < carrera.Cant_resultados; i++)
-    {
-        fwrite(matriz[i], sizeof(int), 2, pf);
-        free(matriz[i]); // Liberamos la memoria de la fila inmediatamente
-    }
+    fwrite(bloqueDatos, sizeof(int), carrera.Cant_resultados * 2, pf);
 
+    free(bloqueDatos);
     free(carrera.resultados);
     fclose(pf);
 
