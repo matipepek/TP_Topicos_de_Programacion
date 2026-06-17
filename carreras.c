@@ -52,7 +52,7 @@ int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const c
     {
         free(carrera.resultados);
         return ERROR_SIN_MEMORIA;
-
+    }
     matriz = (int**)carrera.resultados;
 
     //Conectamos cada puntero del estante a su sector en el bloque gigante
@@ -355,7 +355,7 @@ int verificaPuntosStats(const char* archPilotos, const char* archEstadisticas)
     return TODO_OK;
 }
 
-int CarrerasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen)
+int CarrerasATxt(const char* nombrearchivodestino, const char* nombrearchivoorigen)
 {
     FILE* pf1 = fopen(nombrearchivoorigen, "rb");
     if(!pf1)
