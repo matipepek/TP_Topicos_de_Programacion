@@ -1,6 +1,5 @@
 #include "carreras.h"
 
-
 void limpiarSalto(char* cadena)
 {
     while (*cadena != '\0')
@@ -19,12 +18,13 @@ int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const c
     tCarreras carrera;
     FILE* pf;
     int i;
-    int* pFila;
+    int** matriz;
 
     printf("Registro de nueva carrera\n");
 
     printf("ID de la carrera: ");
     scanf("%d", &carrera.id);
+    //Limpio el salto de linea con getchar
     getchar();
 
     printf("\nCircuito: ");
@@ -42,26 +42,25 @@ int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const c
 
     carrera.resultados = (void**)malloc(carrera.Cant_resultados * sizeof(void*));
     if(!carrera.resultados)
-    {
         return ERROR_SIN_MEMORIA;
-    }
+
+    matriz = (int**)carrera.resultados;
 
     printf("\nIngreso de posiciones\n");
 
     for(i = 0; i < carrera.Cant_resultados; i++)
     {
-        //Asignamos memoria para dos enteros por fila: posicion y id piloto
-        *(carrera.resultados + i) = malloc(2 * sizeof(int));
-        if(!*(carrera.resultados + i))
-        {
+        // Asignamos memoria para los dos enteros de la fila actual
+        matriz[i] = malloc(2 * sizeof(int));
+        if(!matriz[i])
             return ERROR_SIN_MEMORIA;
-        }
 
-        pFila = (int*)*(carrera.resultados + i);
-        *pFila = i + 1; //Columna 0 : Posicion de llegada
+        //Posicion de llegada (columna 0)
+        matriz[i][0] = i + 1;
 
-        printf("Ingrese el ID del piloto que finalizo en la posicion %d: ", *pFila);
-        scanf("%d", pFila + 1); //Columna 1: ID Piloto ingresado directamente en su offset
+        //ID del piloto (columna 1)
+        printf("Ingrese el ID del piloto que finalizo en la posicion %d: ", matriz[i][0]);
+        scanf("%d", &matriz[i][1]);
     }
 
     int actualizacion = actualizarPuntosEstadisticas(archPilotos, archEstadisticas, carrera); // Se lleva el struct tCarrera para actualizar puntos y estadísticas de pilotos
@@ -81,13 +80,11 @@ int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const c
     fwrite(&carrera.estado, sizeof(int), 1, pf);
     fwrite(&carrera.Cant_resultados, sizeof(int), 1, pf);
 
-    //Guardamos el contenido de la matriz dinámica fila por fila
+    //Guardamos el contenido de la matriz dinamica fila por fila
     for(i = 0; i < carrera.Cant_resultados; i++)
     {
-        pFila = (int*)*(carrera.resultados + i);
-        fwrite(pFila, sizeof(int), 2, pf);
-
-        free(*(carrera.resultados + i));
+        fwrite(matriz[i], sizeof(int), 2, pf);
+        free(matriz[i]); // Liberamos la memoria de la fila inmediatamente
     }
 
     free(carrera.resultados);
