@@ -36,7 +36,7 @@ unsigned obtenerPuntos(unsigned posicion); // Auxiliar Punto 3
 int buscaEstadistica(const tEstadisticaPiloto* vEstadistica, int cantPilotos, unsigned id); // Auxiliar Punto 3
 int actualizarPuntosEstadisticas(const char* archPilotos, const char* archEstadisticas, tCarreras vCarrera); // Punto 3 + Sistema incremental de estadísticas
 int verificaPuntosStats(const char* archPilotos, const char* archEstadisticas); // Auxiliar Punto 3 (se puede borrar)
-
+int CarrerasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen); // punto 7
 /** Lote de pruebas para estadisticas, se puede borrar
 int crearLoteEstadisticas(const char* archEstadisticas);
 int estadisticasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);

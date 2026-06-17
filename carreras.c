@@ -347,8 +347,45 @@ int verificaPuntosStats(const char* archPilotos, const char* archEstadisticas)
     return TODO_OK;
 }
 
+int CarrerasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen)
+{
+    FILE* pf1 = fopen(nombrearchivoorigen, "rb");
+    if(!pf1)
+        return ERROR_APERTURA;
 
+    FILE* pf2 = fopen(nombrearchivodestino, "wt");
+    if(!pf2)
+    {
+        fclose(pf1);
+        return ERROR_APERTURA;
+    }
 
+    tCarreras carrera;
+    int resultado[2];
+
+    while(fread(&carrera, sizeof(carrera), 1, pf1) == 1)
+    {
+        fprintf(pf2, "%d|%s|%llu|%d|%d\n",  carrera.id,
+                                            carrera.circuito,
+                                            carrera.fecha,
+                                            carrera.estado,
+                                            carrera.Cant_resultados);
+
+        for(int i = 0; i < carrera.Cant_resultados; i++)
+        {
+            if(fread(resultado, sizeof(int), 2, pf1) != 2)
+                break;
+
+            fprintf(pf2, "%d|%d\n", resultado[0],   // posición
+                                    resultado[1]);  // id piloto
+        }
+    }
+
+    fclose(pf1);
+    fclose(pf2);
+
+    return TODO_OK;
+}
 
 /**
 int crearLoteEstadisticas(const char* archEstadisticas)

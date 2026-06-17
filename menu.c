@@ -41,6 +41,7 @@ void menu()
                 verificaPuntosStats("pilotos.bin","estadisticas.bin");
                 break;
             case 6:
+                CarrerasABin("carreras.txt","carreras.dat");
                 break;
         }
     }while(estado);
