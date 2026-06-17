@@ -52,7 +52,8 @@ int registrarCarrera(const char* nombreArchivo)
     {
         free(carrera.resultados);
         return ERROR_SIN_MEMORIA;
-    }
+
+    matriz = (int**)carrera.resultados;
 
     //Conectamos cada puntero del estante a su sector en el bloque gigante
     for(i = 0; i < carrera.Cant_resultados; i++)
