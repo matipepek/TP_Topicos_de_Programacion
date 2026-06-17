@@ -382,7 +382,11 @@ int CarrerasATxt(const char* nombrearchivodestino, const char* nombrearchivoorig
         for(int i = 0; i < carrera.Cant_resultados; i++)
         {
             if(fread(resultado, sizeof(int), 2, pf1) != 2)
-                break;
+                {
+                    fclose(pf1);
+                    fclose(pf2);
+                    return ERROR_ARCH_CORRUPTO;
+                }
 
             fprintf(pf2, "%d|%d\n", resultado[0],   // posición
                                     resultado[1]);  // id piloto

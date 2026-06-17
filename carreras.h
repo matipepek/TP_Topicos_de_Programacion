@@ -4,6 +4,7 @@
 #define ERROR_APERTURA -2
 #define ERROR_SIN_MEMORIA -1
 #define TODO_OK 1
+#define ERROR_ARCH_CORRUPTO -3
 
 #include <stdio.h>
 #include <stdlib.h>
