@@ -85,6 +85,18 @@ void mostrarEscuderias(tEscuderia* escuderias)
                                             escuderias->estado);
 }
 
+char* devuelveNombreEscuderia(tEscuderia* vEscuderia, unsigned idBuscado, size_t ce)
+{
+    size_t i;
+    for(i=0; i<ce; i++)
+    {
+        if((vEscuderia + i)->id == idBuscado)
+            return (vEscuderia + i)->nombre;
+    }
+
+    return NULL;
+}
+
 int MostrarpilotosXEscuderia(const char* nombrearchivo1, const char* nombrearchivo2)
 {
     FILE* pf=fopen(nombrearchivo1,"rb");

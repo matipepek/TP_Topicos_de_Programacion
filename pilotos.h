@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "escuderias.h"
+#include "carreras.h"
 
 typedef struct
 {
@@ -27,13 +28,10 @@ void ordenamientoBurbuja(tPiloto* vPiloto, size_t ce); // Necesitado para el pun
 
 int crearLotePilotos(const char* nombrearchivo);
 int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);
-void trozadoCampoVariablePilotos(char* cadena,tPiloto* piloto);
-void mostrarPilotos(tPiloto* pilotos);
-
-
-
+void trozadoCampoVariablePilotos(char* cadena,tPiloto* piloto); // Auxiliar lote de prueba
+void mostrarPilotos(tPiloto* pilotos); // Auxiliar
 int listarPilotosyPuntos(const char* nombrearchivo); // Punto 1
-
-
 int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias); // Punto 4
+int buscaPiloto(const tPiloto* vPiloto, int cantPilotos, unsigned id); // Auxiliar Punto 3
+int listarEstadistica(const char* nombrearchivo);
 #endif // PILOTOS_H_INCLUDED

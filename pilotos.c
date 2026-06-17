@@ -23,38 +23,38 @@ void ordenamientoBurbuja(tPiloto* vPiloto, size_t ce)
 int crearLotePilotos(const char* nombrearchivo)
 {
     tPiloto Pilotos[] = {
-    {1,  "Lando Norris",      "Reino Unido", 1, 150, 'R', 19991113},
-    {2,  "Oscar Piastri",     "Australia",   1, 15, 'A', 20010406},
+    {145,  "Lando Norris",      "Reino Unido", 1, 0, 'R', 19991113},
+    {192,  "Oscar Piastri",     "Australia",   1, 0, 'A', 20010406},
 
-    {3,  "George Russell",    "Reino Unido", 2, 25, 'A', 19980215},
-    {4,  "Kimi Antonelli",    "Italia",      2, 92, 'S', 20060825},
+    {250,  "George Russell",    "Reino Unido", 2, 0, 'A', 19980215},
+    {264,  "Kimi Antonelli",    "Italia",      2, 0, 'S', 20060825},
 
-    {5,  "Charles Leclerc",   "Monaco",      3, 37, 'A', 19971016},
-    {6,  "Lewis Hamilton",    "Reino Unido", 3, 21, 'A', 19850107},
+    {284,  "Charles Leclerc",   "Monaco",      3, 0, 'A', 19971016},
+    {496,  "Lewis Hamilton",    "Reino Unido", 3, 0, 'A', 19850107},
 
-    {7,  "Max Verstappen",    "Paises Bajos",4, 47, 'A', 19970930},
-    {8,  "Isack Hadjar",      "Francia",     4, 76, 'A', 20040928},
+    {497,  "Max Verstappen",    "Paises Bajos",4, 0, 'A', 19970930},
+    {500,  "Isack Hadjar",      "Francia",     4, 0, 'A', 20040928},
 
-    {9,  "Fernando Alonso",   "Espania",      5, 20, 'R', 19810729},
-    {10, "Lance Stroll",      "Canada",      5, 10, 'A', 19981029},
+    {542,  "Fernando Alonso",   "Espania",      5, 0, 'R', 19810729},
+    {568, "Lance Stroll",      "Canada",      5, 0, 'A', 19981029},
 
-    {11, "Carlos Sainz",      "Espania",      6, 10, 'A', 19940901},
-    {12, "Alexander Albon",   "Tailandia",   6, 78, 'A', 19960323},
+    {589, "Carlos Sainz",      "Espania",      6, 0, 'A', 19940901},
+    {599, "Alexander Albon",   "Tailandia",   6, 0, 'A', 19960323},
 
-    {13, "Pierre Gasly",      "Francia",     7, 142, 'A', 19960207},
-    {14, "Franco Colapinto",  "Argentina",   7, 852, 'A', 20030527},
+    {600, "Pierre Gasly",      "Francia",     7, 0, 'A', 19960207},
+    {648, "Franco Colapinto",  "Argentina",   7, 0, 'A', 20030527},
 
-    {15, "Esteban Ocon",      "Francia",     8, 732, 'S', 19960917},
-    {16, "Oliver Bearman",    "Reino Unido", 8, 754, 'A', 20050508},
+    {678, "Esteban Ocon",      "Francia",     8, 0, 'S', 19960917},
+    {700, "Oliver Bearman",    "Reino Unido", 8, 0, 'A', 20050508},
 
-    {17, "Liam Lawson",       "Nueva Zelanda",9, 74, 'A', 20020211},
-    {18, "Arvid Lindblad",    "Reino Unido", 9, 241, 'A', 20070808},
+    {701, "Liam Lawson",       "Nueva Zelanda",9, 0, 'A', 20020211},
+    {752, "Arvid Lindblad",    "Reino Unido", 9, 0, 'A', 20070808},
 
-    {19, "Nico Hulkenberg",   "Alemania",    10, 243, 'A', 19870819},
-    {20, "Gabriel Bortoleto", "Brasil",      10, 147, 'A', 20041014},
+    {846, "Nico Hulkenberg",   "Alemania",    10, 0, 'A', 19870819},
+    {873, "Gabriel Bortoleto", "Brasil",      10, 0, 'A', 20041014},
 
-    {21, "Sergio Perez",      "Mexico",      11, 752, 'R', 19900126},
-    {22, "Valtteri Bottas",   "Finlandia",   11, 147, 'R', 19890828}
+    {962, "Sergio Perez",      "Mexico",      11, 0, 'R', 19900126},
+    {999, "Valtteri Bottas",   "Finlandia",   11, 0, 'R', 19890828}
     };
 
     int ce = sizeof(Pilotos)/sizeof(tPiloto);
@@ -77,9 +77,11 @@ int crearLotePilotos(const char* nombrearchivo)
 int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorigen)
 {
     tPiloto Pilotos;
+    tEstadisticaPiloto Estadistica;
     char cadena[BUFFER];
     FILE* pf = fopen(nombrearchivoorigen, "rt");
     FILE* pf2 = fopen(nombrearchivodestino, "wb");
+    FILE* pf3 = fopen ("estadisticas.bin", "wb");
 
     if(!pf)
     {
@@ -92,16 +94,30 @@ int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorige
         return ERROR_APERTURA;
     }
 
+    if(!pf3)
+    {
+        fclose(pf);
+        fclose(pf2);
+        return ERROR_APERTURA;
+    }
 
     while(fgets(cadena, BUFFER, pf))
     {
         trozadoCampoVariablePilotos(cadena, &Pilotos);
+        Estadistica.id_piloto = Pilotos.id;
+        Estadistica.carreras_corridas = 0;
+        Estadistica.mejor_posicion = 0;
+        Estadistica.peor_posicion = 0;
+        Estadistica.suma_posiciones = 0;
+        Estadistica.victorias = 0;
         mostrarPilotos(&Pilotos);
+        fwrite(&Estadistica, sizeof(Estadistica),1, pf3);
         fwrite(&Pilotos, sizeof(Pilotos), 1, pf2);
     }
 
     fclose(pf);
     fclose(pf2);
+    fclose(pf3);
     return TODO_OK;
 }
 
@@ -172,18 +188,6 @@ int listarPilotosyPuntos(const char* nombrearchivo)
 }
 
 // 4. Mostrar ranking de pilotos (ordenado) de la temporada en cuestión.
-
-char* devuelveNombreEscuderia(tEscuderia* vEscuderia, unsigned idBuscado, size_t ce)
-{
-    size_t i;
-    for(i=0; i<ce; i++)
-    {
-        if((vEscuderia + i)->id == idBuscado)
-            return (vEscuderia + i)->nombre;
-    }
-
-    return NULL;
-}
 
 int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias)
 {
@@ -260,5 +264,42 @@ int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias)
     free(vPiloto);
     free(vEscuderia);
 
+    return TODO_OK;
+}
+
+int buscaPiloto(const tPiloto* vPiloto, int cantPilotos, unsigned id)
+{
+    int i;
+
+    for(i=0; i<cantPilotos; i++)
+    {
+        if((vPiloto + i)->id == id)
+            return i;
+    }
+
+    return -1;
+}
+
+int listarEstadistica(const char* nombrearchivo)
+{
+    tEstadisticaPiloto Estadisticas;
+
+    FILE* pf = fopen(nombrearchivo, "rb");
+    if(!pf)
+        return ERROR_APERTURA;
+    rewind(pf);
+    fread(&Estadisticas,sizeof(tEstadisticaPiloto),1,pf);
+    while(!feof(pf))
+    {
+            printf("%d|%d|%d|%d|%d|%d\n",     Estadisticas.id_piloto,
+                                        Estadisticas.carreras_corridas,
+                                        Estadisticas.mejor_posicion,
+                                        Estadisticas.peor_posicion,
+                                        Estadisticas.suma_posiciones,
+                                        Estadisticas.victorias);
+
+        fread(&Estadisticas, sizeof(tEstadisticaPiloto),1,pf);
+    }
+    fclose(pf);
     return TODO_OK;
 }
