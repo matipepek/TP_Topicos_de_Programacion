@@ -353,7 +353,7 @@ int verificaPuntosStats(const char* archPilotos, const char* archEstadisticas)
 
 
 
-////
+/**
 int crearLoteEstadisticas(const char* archEstadisticas)
 {
     tEstadisticaPiloto vEstadisticas[] = {
@@ -462,3 +462,5 @@ int estadisticasABin(const char* nombrearchivodestino, const char* nombrearchivo
     fclose(pf2);
     return TODO_OK;
 }
+
+*/

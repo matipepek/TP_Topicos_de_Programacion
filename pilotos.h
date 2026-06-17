@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "escuderias.h"
+#include "carreras.h"
 
 typedef struct
 {
@@ -32,4 +33,5 @@ void mostrarPilotos(tPiloto* pilotos); // Auxiliar
 int listarPilotosyPuntos(const char* nombrearchivo); // Punto 1
 int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias); // Punto 4
 int buscaPiloto(const tPiloto* vPiloto, int cantPilotos, unsigned id); // Auxiliar Punto 3
+int listarEstadistica(const char* nombrearchivo);
 #endif // PILOTOS_H_INCLUDED
