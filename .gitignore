@@ -3,3 +3,7 @@ obj/
 
 *.depend
 *.layout
+carreras.dat
+estadisticas.bin
+estadisticas.txt
+pilotos.bin
