@@ -252,7 +252,7 @@ int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias)
 
     ordenamientoBurbuja(vPiloto, cantActivos);
 
-    printf("\n---- %35s %25s\n", "Ranking de Pilotos", "----");
+    printf("\n---- %45s %15s\n", "Ranking de Pilotos (Solo activos)", "----");
     printf("\n%-4s | %-25s | %-20s | %-7s\n", "N", "Nombre", "Escuderia", "Puntaje");
     printf("------------------------------------------------------------------\n");
 
@@ -267,14 +267,21 @@ int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias)
     return TODO_OK;
 }
 
-int buscaPiloto(const tPiloto* vPiloto, int cantPilotos, unsigned id)
+int buscaPiloto(FILE* archPiloto, unsigned id)
 {
-    int i;
+    rewind(archPiloto);
 
-    for(i=0; i<cantPilotos; i++)
+    tPiloto auxPiloto;
+    int ind = 0;
+
+    fread(&auxPiloto, sizeof(tPiloto), 1, archPiloto);
+    while(!feof(archPiloto))
     {
-        if((vPiloto + i)->id == id)
-            return i;
+        if(auxPiloto.id == id)
+            return ind;
+
+        ind++;
+        fread(&auxPiloto, sizeof(tPiloto), 1, archPiloto);
     }
 
     return -1;

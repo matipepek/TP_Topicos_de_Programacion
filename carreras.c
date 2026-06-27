@@ -53,6 +53,7 @@ int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const c
         free(carrera.resultados);
         return ERROR_SIN_MEMORIA;
     }
+
     matriz = (int**)carrera.resultados;
 
     //Conectamos cada puntero del estante a su sector en el bloque gigante
@@ -156,14 +157,21 @@ unsigned obtenerPuntos(unsigned posicion)
     return 0;
 }
 
-int buscaEstadistica(const tEstadisticaPiloto* vEstadistica, int cantPilotos, unsigned id)
+int buscaEstadistica(FILE* archEstadisticas, unsigned id)
 {
-    int i;
+    rewind(archEstadisticas);
 
-    for(i=0; i<cantPilotos; i++)
+    tEstadisticaPiloto auxEstadistica;
+    int ind = 0;
+
+    fread(&auxEstadistica, sizeof(tEstadisticaPiloto), 1, archEstadisticas);
+    while(!feof(archEstadisticas))
     {
-        if((vEstadistica + i)->id_piloto == id)
-            return i;
+        if(auxEstadistica.id_piloto == id)
+            return ind;
+
+        ind++;
+        fread(&auxEstadistica, sizeof(tEstadisticaPiloto), 1, archEstadisticas);
     }
 
     return -1;
@@ -171,17 +179,11 @@ int buscaEstadistica(const tEstadisticaPiloto* vEstadistica, int cantPilotos, un
 
 int actualizarPuntosEstadisticas(const char* archPilotos, const char* archEstadisticas, tCarreras vCarrera) // Actualizamos al piloto, según la cantidad que terminaron la carrera bajo la estructura de carrera ingresada
 {
-    FILE* pfPilotos = fopen(archPilotos, "rb"); // Abro archivos, para leer todo de una
-    FILE* pfEstadisticas = fopen(archEstadisticas, "rb");
+    FILE* pfPilotos = fopen(archPilotos, "rb+"); // Abro archivos, para leer todo de una
+    FILE* pfEstadisticas = fopen(archEstadisticas, "rb+");
 
     if(!pfPilotos)
         return ERROR_APERTURA;
-
-    fseek(pfPilotos, 0, SEEK_END);
-    size_t tam = ftell(pfPilotos);
-    fseek(pfPilotos, 0, SEEK_SET);
-
-    size_t ce = tam / sizeof(tPiloto); // Calculo espacio para el vector dinámico de Pilotos
 
     if(!pfEstadisticas)
     {
@@ -189,37 +191,11 @@ int actualizarPuntosEstadisticas(const char* archPilotos, const char* archEstadi
         return ERROR_APERTURA;
     }
 
-    fseek(pfEstadisticas, 0, SEEK_END);
-    size_t tamEstadisticas = ftell(pfEstadisticas);
-    fseek(pfEstadisticas, 0, SEEK_SET);
-
-    size_t ceEstadisticas = tamEstadisticas / sizeof(tEstadisticaPiloto); // Calculo espacio para el vector dinámico de Estadisticas
-
-    tPiloto* vPiloto = (tPiloto*)malloc(ce * sizeof(tPiloto));
-    if(!vPiloto)
-    {
-        fclose(pfPilotos);
-        fclose(pfEstadisticas);
-        return ERROR_SIN_MEMORIA;
-    }
-
-    tEstadisticaPiloto* vEstadistica = (tEstadisticaPiloto*)malloc(ceEstadisticas * sizeof(tEstadisticaPiloto));
-    if(!vEstadistica)
-    {
-        free(vPiloto);
-        fclose(pfPilotos);
-        fclose(pfEstadisticas);
-        return ERROR_SIN_MEMORIA;
-    }
-
-    fread(vPiloto, sizeof(tPiloto), ce, pfPilotos); // Me guardo todos los pilotos en el vector
-    fread(vEstadistica, sizeof(tEstadisticaPiloto), ceEstadisticas, pfEstadisticas); // Me guardo todas las estadisticas en el vector
-
-    fclose(pfPilotos);
-    fclose(pfEstadisticas);
+    tPiloto vPiloto;
+    tEstadisticaPiloto vEstadistica;
 
     int* pFila; // Creo puntero para acceder bien a carrera.resultados, igualmente tenemos que castearlo después, para la posición usamos *(pFila + i) y para el id *(*(pFila + i) + 1)
-    int pos, posEstadistica, posPiloto, i; // Me guardo la "pos" de la matriz resultados, busco la posicion en el vector de la estadística y el piloto para acceder por ID
+    int pos, posEstadistica, posPiloto, i; // Me guardo la "pos" de la matriz resultados, busco la posicion en el archivo de las estadísticas y de los pilotos para acceder por ID
     unsigned idActual; // Guardo la id actual de la matriz resultados
 
     for(i=0; i<vCarrera.Cant_resultados; i++)
@@ -227,62 +203,52 @@ int actualizarPuntosEstadisticas(const char* archPilotos, const char* archEstadi
         pFila = (int*)*(vCarrera.resultados + i);
         pos = *pFila;
         idActual = (unsigned)*(pFila + 1);
-        posPiloto = buscaPiloto(vPiloto, ce, idActual);
 
-        if(posPiloto != -1) // Si encontró al piloto
+        posPiloto = buscaPiloto(pfPilotos, idActual);
+        posEstadistica = buscaEstadistica(pfEstadisticas, idActual);
+
+        if(posPiloto != -1 && posEstadistica != -1) // Si encontró al piloto y si encuentra su estadística (debe existir)
         {
-            posEstadistica = buscaEstadistica(vEstadistica, ceEstadisticas, idActual);
-            if(posEstadistica != -1) // Si encuentra su estadística (debe existir)
+            fseek(pfPilotos, posPiloto * sizeof(tPiloto), SEEK_SET);
+            fseek(pfEstadisticas, posEstadistica * sizeof(tEstadisticaPiloto), SEEK_SET);
+
+            fread(&vPiloto, sizeof(tPiloto), 1, pfPilotos);
+            fread(&vEstadistica, sizeof(tEstadisticaPiloto), 1, pfEstadisticas);
+
+            if(vPiloto.estado == 'A') // Si está activo
+                vPiloto.puntos_acumulados += obtenerPuntos((unsigned)pos);
+
+            vEstadistica.carreras_corridas++;
+            vEstadistica.suma_posiciones += pos;
+
+            if(pos == 1) // Si terminó primero
+                vEstadistica.victorias++;
+
+            if(vEstadistica.carreras_corridas == 1) // Si es la primera carrera que corre
             {
-                if((vPiloto + posPiloto)->estado == 'A') // Si está activo
-                    (vPiloto + posPiloto)->puntos_acumulados += obtenerPuntos((unsigned)pos);
+                vEstadistica.mejor_posicion = pos;
+                vEstadistica.peor_posicion = pos;
+            } else {
+                if(vEstadistica.mejor_posicion > pos)
+                    vEstadistica.mejor_posicion = pos;
 
-                (vEstadistica + posEstadistica)->carreras_corridas++;
-                (vEstadistica + posEstadistica)->suma_posiciones += pos;
-
-                if(pos == 1) // Si terminó primero
-                    (vEstadistica + posEstadistica)->victorias++;
-
-                if((vEstadistica + posEstadistica)->carreras_corridas == 1) // Si es la primera carrera que corre
-                {
-                    (vEstadistica + posEstadistica)->mejor_posicion = pos;
-                    (vEstadistica + posEstadistica)->peor_posicion = pos;
-                } else {
-                    if((vEstadistica + posEstadistica)->mejor_posicion > pos)
-                        (vEstadistica + posEstadistica)->mejor_posicion = pos;
-
-                    if((vEstadistica + posEstadistica)->peor_posicion < pos)
-                        (vEstadistica + posEstadistica)->peor_posicion = pos;
-                }
+                if(vEstadistica.peor_posicion < pos)
+                    vEstadistica.peor_posicion = pos;
             }
+
+            fseek(pfPilotos, -1 * (long)sizeof(tPiloto), SEEK_CUR);
+            fseek(pfEstadisticas, -1 * (long)sizeof(tEstadisticaPiloto), SEEK_CUR);
+
+            fwrite(&vPiloto, sizeof(tPiloto), 1, pfPilotos);
+            fwrite(&vEstadistica, sizeof(tEstadisticaPiloto), 1, pfEstadisticas);
+
+            fflush(pfPilotos);
+            fflush(pfEstadisticas); // Limpio buffers
         }
     }
 
-    pfPilotos = fopen(archPilotos, "wb");
-    if(!pfPilotos)
-    {
-        free(vEstadistica);
-        free(vPiloto);
-        return ERROR_APERTURA;
-    }
-
-    pfEstadisticas = fopen(archEstadisticas, "wb");
-    if(!pfEstadisticas)
-    {
-        free(vEstadistica);
-        free(vPiloto);
-        fclose(pfPilotos);
-        return ERROR_APERTURA;
-    }
-
-    fwrite(vPiloto, sizeof(tPiloto), ce, pfPilotos); // Abro para escribir todos los pilotos nuevamente
-    fwrite(vEstadistica, sizeof(tEstadisticaPiloto), ceEstadisticas, pfEstadisticas); // Abro para escribir todos las estadísticas nuevamente
-
     fclose(pfPilotos);
     fclose(pfEstadisticas);
-
-    free(vEstadistica);
-    free(vPiloto);
 
     return TODO_OK;
 }
@@ -403,28 +369,28 @@ int CarrerasATxt(const char* nombrearchivodestino, const char* nombrearchivoorig
 int crearLoteEstadisticas(const char* archEstadisticas)
 {
     tEstadisticaPiloto vEstadisticas[] = {
-    { 1 },
-    { 2 },
-    { 3 },
-    { 4 },
-    { 5 },
-    { 6 },
-    { 7 },
-    { 8 },
-    { 9 },
-    { 10 },
-    { 11 },
-    { 12 },
-    { 13 },
-    { 14 },
-    { 15 },
-    { 16 },
-    { 17 },
-    { 18 },
-    { 19 },
-    { 20 },
-    { 21 },
-    { 22 }
+    { 145 },
+    { 192 },
+    { 250 },
+    { 264 },
+    { 284 },
+    { 496 },
+    { 497 },
+    { 500 },
+    { 542 },
+    { 568 },
+    { 589 },
+    { 599 },
+    { 600 },
+    { 648 },
+    { 678 },
+    { 700 },
+    { 701 },
+    { 752 },
+    { 846 },
+    { 873 },
+    { 962 },
+    { 999 }
 
     };
 
@@ -508,5 +474,4 @@ int estadisticasABin(const char* nombrearchivodestino, const char* nombrearchivo
     fclose(pf2);
     return TODO_OK;
 }
-
 */

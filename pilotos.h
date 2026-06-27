@@ -32,6 +32,6 @@ void trozadoCampoVariablePilotos(char* cadena,tPiloto* piloto); // Auxiliar lote
 void mostrarPilotos(tPiloto* pilotos); // Auxiliar
 int listarPilotosyPuntos(const char* nombrearchivo); // Punto 1
 int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias); // Punto 4
-int buscaPiloto(const tPiloto* vPiloto, int cantPilotos, unsigned id); // Auxiliar Punto 3
+int buscaPiloto(FILE* archPiloto, unsigned id); // Auxiliar Punto 3
 int listarEstadistica(const char* nombrearchivo);
 #endif // PILOTOS_H_INCLUDED
