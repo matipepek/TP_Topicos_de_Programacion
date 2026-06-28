@@ -310,3 +310,24 @@ int listarEstadistica(const char* nombrearchivo)
     fclose(pf);
     return TODO_OK;
 }
+
+int devuelveCantPilotos(const char* archPilotos)
+{
+    FILE* pf = fopen(archPilotos, "rb");
+    tPiloto pilotoAux;
+
+    if(!pf)
+        return ERROR_APERTURA;
+
+    int cantPilotos = 0;
+
+    fread(&pilotoAux, sizeof(tPiloto), 1, pf);
+    while(fread(&pilotoAux, sizeof(tPiloto), 1, pf) == 1)
+    {
+        cantPilotos++;
+    }
+
+    fclose(pf);
+
+    return cantPilotos;
+}

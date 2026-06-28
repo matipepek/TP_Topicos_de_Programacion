@@ -25,13 +25,15 @@ typedef struct
 
 void ordenamientoBurbuja(tPiloto* vPiloto, size_t ce); // Necesitado para el punto 4.
 
-
+// Lote de pruebas
 int crearLotePilotos(const char* nombrearchivo);
 int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);
 void trozadoCampoVariablePilotos(char* cadena,tPiloto* piloto); // Auxiliar lote de prueba
+
 void mostrarPilotos(tPiloto* pilotos); // Auxiliar
 int listarPilotosyPuntos(const char* nombrearchivo); // Punto 1
 int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias); // Punto 4
 int buscaPiloto(FILE* archPiloto, unsigned id); // Auxiliar Punto 3
 int listarEstadistica(const char* nombrearchivo);
+int devuelveCantPilotos(const char* archPilotos);
 #endif // PILOTOS_H_INCLUDED

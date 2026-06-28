@@ -10,3 +10,5 @@ pilotos.bin
 carreras.dat
 estadisticas.bin
 pilotos.bin
+*.bin
+*.dat

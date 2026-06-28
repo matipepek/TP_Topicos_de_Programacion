@@ -1,4 +1,5 @@
 #include "carreras.h"
+#include "fecha.h"
 
 void limpiarSalto(char* cadena)
 {
@@ -17,76 +18,112 @@ int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const c
 {
     tCarreras carrera;
     FILE* pf;
-    int i;
-    int** matriz;
-    int* bloqueDatos; // Puntero auxiliar para el bloque de memoria contigua
+    int i, cantPilotos; // Usamos la cantidad de pilotos totales para validar los máximos que pueden participar
+    int** matriz = NULL;
+    int* bloqueDatos = NULL; // Puntero auxiliar para el bloque de memoria contigua
 
     printf("Registro de nueva carrera\n");
 
     printf("ID de la carrera: ");
     scanf("%d", &carrera.id);
+
+    while(carrera.id < 1)
+    {
+        printf("\nERROR - ID invalida | ID de la carrera: ");
+        scanf("%d", &carrera.id);
+    }
     //Limpio el salto de linea con getchar
     getchar();
 
-    printf("\nCircuito: ");
+    printf("\nCircuito (maximo 20 caracteres): ");
     fgets(carrera.circuito, 20, stdin);
     limpiarSalto(carrera.circuito);
 
     printf("\nFecha (formato AAAAMMDD): ");
     scanf("%llu", &carrera.fecha);
 
+    while(esFechaValida(carrera.fecha) != TODO_OK)
+    {
+        printf("\nERROR - Fecha invalida | Fecha (formato AAAAMMDD): ");
+        scanf("%llu", &carrera.fecha);
+    }
+
     printf("\nEstado (1 - Finalizada, 0 - Suspendida): ");
     scanf("%d", &carrera.estado);
 
-    printf("\nCantidad de pilotos que finalizaron/participaron: ");
-    scanf("%d", &carrera.Cant_resultados);
-
-    carrera.resultados = (void**)malloc(carrera.Cant_resultados * sizeof(void*));
-    if(!carrera.resultados)
-        return ERROR_SIN_MEMORIA;
-
-    matriz = (int**)carrera.resultados;
-
-    bloqueDatos = (int*)malloc(carrera.Cant_resultados * 2 * sizeof(int));
-    if(!bloqueDatos)
+    while(carrera.estado < 0 || carrera.estado > 1)
     {
-        free(carrera.resultados);
-        return ERROR_SIN_MEMORIA;
+        printf("\nERROR - Estado invalido | Estado (1 - Finalizada, 0 - Suspendida): ");
+        scanf("%d", &carrera.estado);
     }
 
-    matriz = (int**)carrera.resultados;
-
-    //Conectamos cada puntero del estante a su sector en el bloque gigante
-    for(i = 0; i < carrera.Cant_resultados; i++)
+    if(carrera.estado == 0)
     {
-        matriz[i] = bloqueDatos + (i * 2);
+        carrera.Cant_resultados = 0;
+        carrera.resultados = NULL;
+    } else {
+        cantPilotos = devuelveCantPilotos(archPilotos);
+
+        printf("\nCantidad de pilotos que finalizaron/participaron: ");
+        scanf("%d", &carrera.Cant_resultados);
+
+        while(carrera.Cant_resultados < 0 || carrera.Cant_resultados > cantPilotos)
+        {
+            printf("\nERROR - Cantidad invalida | Cantidad de pilotos que finalizaron/participaron: ");
+            scanf("%d", &carrera.Cant_resultados);
+        }
+
+        carrera.resultados = (void**)malloc(carrera.Cant_resultados * sizeof(void*));
+        if(!carrera.resultados)
+            return ERROR_SIN_MEMORIA;
+
+        matriz = (int**)carrera.resultados;
+
+        bloqueDatos = (int*)malloc(carrera.Cant_resultados * 2 * sizeof(int));
+        if(!bloqueDatos)
+        {
+            free(carrera.resultados);
+            return ERROR_SIN_MEMORIA;
+        }
+
+        matriz = (int**)carrera.resultados;
+
+        //Conectamos cada puntero del estante a su sector en el bloque gigante
+        for(i = 0; i < carrera.Cant_resultados; i++)
+        {
+            matriz[i] = bloqueDatos + (i * 2);
+        }
+
+        printf("\nIngreso de posiciones\n");
+
+        for(i = 0; i < carrera.Cant_resultados; i++)
+        {
+            //Posicion de llegada (columna 0)
+            matriz[i][0] = i + 1;
+
+            //ID del piloto (columna 1)
+            printf("Ingrese el ID del piloto que finalizo en la posicion %d: ", matriz[i][0]);
+            scanf("%d", &matriz[i][1]);
+        }
+
+        int actualizacion = actualizarPuntosEstadisticas(archPilotos, archEstadisticas, carrera); // Se lleva el struct tCarrera para actualizar puntos y estadísticas de pilotos
+        if(actualizacion != TODO_OK)
+            printf("ERROR al actualizar estadisticas.\n");
+
     }
-
-    printf("\nIngreso de posiciones\n");
-
-    for(i = 0; i < carrera.Cant_resultados; i++)
-    {
-        //Posicion de llegada (columna 0)
-        matriz[i][0] = i + 1;
-
-        //ID del piloto (columna 1)
-        printf("Ingrese el ID del piloto que finalizo en la posicion %d: ", matriz[i][0]);
-        scanf("%d", &matriz[i][1]);
-    }
-
-    int actualizacion = actualizarPuntosEstadisticas(archPilotos, archEstadisticas, carrera); // Se lleva el struct tCarrera para actualizar puntos y estadísticas de pilotos
-    if(actualizacion != TODO_OK)
-        printf("ERROR al actualizar estadisticas.\n");
 
     pf = fopen(nombreArchivo, "ab");
     if (!pf)
     {
-        free(bloqueDatos);
-        free(carrera.resultados);
+        if(carrera.estado != 0)
+        {
+            free(bloqueDatos);
+            free(carrera.resultados);
+        }
         return ERROR_APERTURA;
     }
 
-    //Guardamos primero los campos de longitud fija
+        //Guardamos primero los campos de longitud fija
     fwrite(&carrera.id, sizeof(int), 1, pf);
     fwrite(carrera.circuito, sizeof(char), 20, pf);
     fwrite(&carrera.fecha, sizeof(unsigned long long), 1, pf);
@@ -95,11 +132,16 @@ int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const c
 
     fwrite(bloqueDatos, sizeof(int), carrera.Cant_resultados * 2, pf);
 
-    free(bloqueDatos);
-    free(carrera.resultados);
+    if(carrera.estado != 0)
+    {
+        free(bloqueDatos);
+        free(carrera.resultados);
+    }
+
     fclose(pf);
 
     printf("\nCarrera registrada y guardada exitosamente en %s.\n", nombreArchivo);
+
     return TODO_OK;
 }
 
