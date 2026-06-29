@@ -35,24 +35,47 @@ int crearLoteEscuderias(const char* nombrearchivo)
 int escuderiasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen)
 {
     tEscuderia Escuderias;
+    tIndiceEscuderia Indice;
+    unsigned cont = 0;
     char cadena[BUFFER];
     FILE* pf = fopen(nombrearchivoorigen, "rt");
     FILE* pf2 = fopen(nombrearchivodestino, "wb");
+    FILE* pf3 = fopen ("indiceescuderias.bin", "wb");
 
-    if(!pf || !pf2)
+    if(!pf)
     {
+        return ERROR_APERTURA;
+    }
+
+    if(!pf2)
+    {
+        fclose(pf);
+        return ERROR_APERTURA;
+    }
+
+    if(!pf3)
+    {
+        fclose(pf);
+        fclose(pf2);
         return ERROR_APERTURA;
     }
 
     while(fgets(cadena, BUFFER, pf))
     {
         trozadoCampoVariableEscuderias(cadena, &Escuderias);
+
+        Indice.id = Escuderias.id;
+        Indice.indice = cont;
+        cont++;
+
         mostrarEscuderias(&Escuderias);
         fwrite(&Escuderias, sizeof(Escuderias), 1, pf2);
+        fwrite(&Indice, sizeof(Indice), 1, pf3);
     }
 
     fclose(pf);
     fclose(pf2);
+    fclose(pf3);
     return TODO_OK;
 }
 
@@ -177,4 +200,109 @@ int MostrarpilotosXEscuderia(const char* nombrearchivo1, const char* nombrearchi
     fclose(pf);
     fclose(pf2);
     return TODO_OK;
+}
+
+int modificarEstadoEscuderia(const char* nombrearchivo, const char* nombrearchivoindice)
+{
+    unsigned id;
+    int pos;
+    int nuevoestado;
+    tEscuderia escuderia;
+    tBajas baja;
+    FILE* pf = fopen(nombrearchivo,"r+b");
+    if(!pf)
+        return ERROR_APERTURA;
+    printf("Escriba el ID de la escuderia para modificar el estado: \n");
+    scanf("%u",&id);
+    getchar();
+    pos = busquedaIdEscuderia(id,nombrearchivoindice);
+    while(pos<0)
+    {
+        printf("Esa id no existe, reintente: \n");
+        scanf("%u",&id);
+        pos = busquedaIdEscuderia(id,nombrearchivoindice);
+    }
+    fseek(pf, pos*sizeof(tEscuderia),SEEK_SET);
+    fread(&escuderia, sizeof(tEscuderia),1, pf);
+    printf("ingrese el nuevo estado 1.Activo 0.Inactivo \n");
+    scanf("%d",&nuevoestado);
+    getchar();
+    while(nuevoestado == escuderia.estado || busquedaEstadoEscuderia(nuevoestado)<0)
+    {
+        printf("Reingrese un estado valido 1.Activo 0.Inactivo: \n");
+        scanf("%d",&nuevoestado);
+        getchar();
+    }
+    escuderia.estado = nuevoestado;
+    fseek(pf, pos*sizeof(tEscuderia),SEEK_SET);
+    fwrite(&escuderia, sizeof(escuderia),1, pf);
+    if (nuevoestado == 0)
+    {
+        FILE* pf2 = fopen("bajas.bin","ab");
+        if(!pf2)
+        {
+            fclose(pf);
+            return ERROR_APERTURA;
+        }
+        baja.id = id;
+        strcpy(baja.nombre, escuderia.nombre);
+        strcpy(baja.entidad, "Escuderia");
+        fwrite(&baja, sizeof(baja),1,pf2);
+        fclose(pf2);
+    }
+    fclose(pf);
+    return TODO_OK;
+}
+
+int listarIndiceEscuderias(const char* nombrearchivo)
+{
+     tIndiceEscuderia Indice;
+
+    FILE* pf = fopen(nombrearchivo, "rb");
+    if(!pf)
+    {
+        return ERROR_APERTURA;
+    }
+    rewind(pf);
+    fread(&Indice,sizeof(tIndiceEscuderia),1,pf);
+    while(!feof(pf))
+    {
+            printf("%u|%u\n", Indice.id,
+                                Indice.indice);
+            fread(&Indice,sizeof(tIndiceEscuderia),1,pf);
+    }
+    fclose(pf);
+    return TODO_OK;
+}
+
+int busquedaIdEscuderia(unsigned id, const char* nombrearchivoindice)
+{
+    tIndiceEscuderia escuderia;
+    FILE* pf = fopen(nombrearchivoindice,"rb");
+    if(!pf)
+        return ERROR_APERTURA;
+    while(fread(&escuderia, sizeof(tIndiceEscuderia),1,pf))
+    {
+        if(id == escuderia.id)
+        {
+            fclose(pf);
+            return escuderia.indice;
+        }
+    }
+    fclose(pf);
+    return ERROR_NO_ENCONTRADO;
+}
+
+int busquedaEstadoEscuderia(char estado)
+{
+    int estados[CANT_ESTADOS_ESCUDERIAS] = {0,1};
+    int* pEstados = estados;
+    for(int i = 0; i<CANT_ESTADOS_ESCUDERIAS; i++)
+    {
+        if(estado == *pEstados)
+            return TODO_OK;
+        else
+            pEstados++;
+    }
+    return ERROR_NO_ENCONTRADO;
 }

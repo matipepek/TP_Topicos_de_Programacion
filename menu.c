@@ -12,6 +12,7 @@ void menu()
         printf("4. Mostrar pilotos por escuderia\n");
         printf("5. Calcular estadisticas de pilotos\n");
         printf("6. Exportar datos a archivos de texto\n");
+        printf("7. Mas opciones\n");
         printf("Ingrese opcion: ");
         scanf("%d", &estado);
         while(!(estado>=0 && estado <=7))
@@ -42,6 +43,32 @@ void menu()
                 break;
             case 6:
                 CarrerasATxt("carreras.txt","carreras.dat");
+                break;
+            case 7:
+                printf("1. Volver atras\n");
+                printf("2. Modificar estado piloto\n");
+                printf("3. Modificar estado escuderia\n");
+                printf("Ingrese opcion: ");
+                scanf("%d", &estado);
+                while(!(estado>=1 && estado <=3))
+                {
+                    printf("Ingrese opcion valida: ");
+                    scanf("%d", &estado);
+                }
+                printf("\n");
+                switch (estado)
+                {
+                case 1:
+                    break;
+                case 2:
+                    modificarEstadoPiloto("pilotos.bin","indicepilotos.bin");
+                    verBajas("bajas.bin");
+                    break;
+                case 3:
+                    modificarEstadoEscuderia("escuderias.bin","indiceescuderias.bin");
+                    verBajas("bajas.bin");
+                    break;
+                }
                 break;
         }
     }while(estado);

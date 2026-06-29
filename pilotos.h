@@ -3,8 +3,10 @@
 
 #define ERROR_APERTURA -2
 #define ERROR_SIN_MEMORIA -1
+#define ERROR_NO_ENCONTRADO -5
 #define TODO_OK 1
 #define BUFFER 200
+#define CANT_ESTADOS_PILOTOS 3
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +25,17 @@ typedef struct
     unsigned long long fechaNacimiento;
 } tPiloto;
 
+typedef struct {
+                unsigned id;
+                int indice;
+}tIndicePiloto;
+
+typedef struct {
+            unsigned id;
+            char nombre[30];
+            char entidad[20];
+} tBajas;
+
 void ordenamientoBurbuja(tPiloto* vPiloto, size_t ce); // Necesitado para el punto 4.
 
 
@@ -34,4 +47,9 @@ int listarPilotosyPuntos(const char* nombrearchivo); // Punto 1
 int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias); // Punto 4
 int buscaPiloto(const tPiloto* vPiloto, int cantPilotos, unsigned id); // Auxiliar Punto 3
 int listarEstadistica(const char* nombrearchivo);
+int modificarEstadoPiloto(const char* nombrearchivo, const char* nombrearchivoindice);
+int listarIndicePilotos(const char* nombrearchivo);
+int busquedaIdPiloto(unsigned id, const char* nombrearchivoindice);
+int busquedaEstadoPiloto(char estado);
+int verBajas(const char *nombrearchivo);
 #endif // PILOTOS_H_INCLUDED

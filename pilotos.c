@@ -78,10 +78,13 @@ int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorige
 {
     tPiloto Pilotos;
     tEstadisticaPiloto Estadistica;
+    tIndicePiloto Indice;
+    unsigned cont = 0;
     char cadena[BUFFER];
     FILE* pf = fopen(nombrearchivoorigen, "rt");
     FILE* pf2 = fopen(nombrearchivodestino, "wb");
     FILE* pf3 = fopen ("estadisticas.bin", "wb");
+    FILE* pf4 = fopen ("indicepilotos.bin", "wb");
 
     if(!pf)
     {
@@ -101,6 +104,14 @@ int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorige
         return ERROR_APERTURA;
     }
 
+    if(!pf4)
+    {
+        fclose(pf);
+        fclose(pf2);
+        fclose(pf3);
+        return ERROR_APERTURA;
+    }
+
     while(fgets(cadena, BUFFER, pf))
     {
         trozadoCampoVariablePilotos(cadena, &Pilotos);
@@ -110,14 +121,21 @@ int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorige
         Estadistica.peor_posicion = 0;
         Estadistica.suma_posiciones = 0;
         Estadistica.victorias = 0;
+
+        Indice.id = Pilotos.id;
+        Indice.indice = cont;
+        cont++;
+
         mostrarPilotos(&Pilotos);
         fwrite(&Estadistica, sizeof(Estadistica),1, pf3);
+        fwrite(&Indice, sizeof(Indice), 1, pf4);
         fwrite(&Pilotos, sizeof(Pilotos), 1, pf2);
     }
 
     fclose(pf);
     fclose(pf2);
     fclose(pf3);
+    fclose(pf4);
     return TODO_OK;
 }
 
@@ -303,3 +321,124 @@ int listarEstadistica(const char* nombrearchivo)
     fclose(pf);
     return TODO_OK;
 }
+
+int listarIndicePilotos(const char* nombrearchivo)
+{
+    tIndicePiloto Indice;
+
+    FILE* pf = fopen(nombrearchivo, "rb");
+    if(!pf)
+    {
+        return ERROR_APERTURA;
+    }
+    rewind(pf);
+    fread(&Indice,sizeof(tIndicePiloto),1,pf);
+    while(!feof(pf))
+    {
+            printf("%u|%u\n", Indice.id,
+                                Indice.indice);
+            fread(&Indice,sizeof(tIndicePiloto),1,pf);
+    }
+    fclose(pf);
+    return TODO_OK;
+}
+int modificarEstadoPiloto(const char* nombrearchivo, const char* nombrearchivoindice)
+{
+    unsigned id;
+    int pos;
+    char nuevoestado;
+    tPiloto piloto;
+    tBajas baja;
+    FILE* pf = fopen(nombrearchivo,"r+b");
+    if(!pf)
+        return ERROR_APERTURA;
+    printf("Escriba la ID del piloto a modificar el estado: \n");
+    scanf("%u",&id);
+    getchar();
+    pos = busquedaIdPiloto(id,nombrearchivoindice);
+    while(pos<0)
+    {
+        printf("Esa id no existe, reintente: \n");
+        scanf("%u",&id);
+        pos = busquedaIdPiloto(id,nombrearchivoindice);
+    }
+    fseek(pf, pos*sizeof(tPiloto),SEEK_SET);
+    fread(&piloto, sizeof(tPiloto),1, pf);
+    printf("ingrese el nuevo estado A. Activo R.Retirado S.Suspendido: \n");
+    scanf("%c",&nuevoestado);
+    getchar();
+    while(nuevoestado == piloto.estado || busquedaEstadoPiloto(nuevoestado)<0)
+    {
+        printf("Reingrese un estado valido A. Activo R. Retirado S. Suspendido: \n");
+        scanf("%c",&nuevoestado);
+        getchar();
+    }
+    piloto.estado = nuevoestado;
+    fseek(pf, pos*sizeof(tPiloto),SEEK_SET);
+    fwrite(&piloto, sizeof(piloto),1, pf);
+    if (nuevoestado == 'R')
+    {
+        FILE* pf2 = fopen("bajas.bin","ab");
+        if(!pf2)
+        {
+            fclose(pf);
+            return ERROR_APERTURA;
+        }
+        baja.id = id;
+        strcpy(baja.nombre, piloto.nombre);
+        strcpy(baja.entidad, "Piloto");
+        fwrite(&baja, sizeof(baja),1,pf2);
+        fclose(pf2);
+    }
+    fclose(pf);
+    return TODO_OK;
+}
+
+int busquedaIdPiloto(unsigned id, const char* nombrearchivoindice)
+{
+    tIndicePiloto piloto;
+    FILE* pf = fopen(nombrearchivoindice,"rb");
+    if(!pf)
+        return ERROR_APERTURA;
+    while(fread(&piloto, sizeof(tIndicePiloto),1,pf))
+    {
+        if(id == piloto.id)
+        {
+            fclose(pf);
+            return piloto.indice;
+        }
+    }
+    fclose(pf);
+    return ERROR_NO_ENCONTRADO;
+}
+
+int busquedaEstadoPiloto(char estado)
+{
+    char estados[CANT_ESTADOS_PILOTOS] = {'A','R','S'};
+    char* pEstados = estados;
+    for(int i = 0; i<CANT_ESTADOS_PILOTOS; i++)
+    {
+        if(estado == *pEstados)
+            return TODO_OK;
+        else
+            pEstados++;
+    }
+    return ERROR_NO_ENCONTRADO;
+}
+
+int verBajas(const char *nombrearchivo)
+{
+    tBajas baja;
+    FILE* pf = fopen(nombrearchivo, "rb");
+    if(!pf)
+        return ERROR_APERTURA;
+    while(fread(&baja,sizeof(tBajas),1,pf))
+    {
+        printf("%u|%s|%s\n",    baja.id,
+                                baja.nombre,
+                                baja.entidad);
+    }
+    fclose(pf);
+    return TODO_OK;
+}
+//
