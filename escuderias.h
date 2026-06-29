@@ -21,14 +21,19 @@ typedef struct
     int estado;     //(1: Activo, 0: inactivo)
 } tEscuderia;
 
+
 typedef struct {
                 unsigned id;
                 int indice;
 }tIndiceEscuderia;
 
+
+// Lote de pruebas
+
 int crearLoteEscuderias(const char* nombrearchivo);
 int escuderiasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);
 void trozadoCampoVariableEscuderias(char* cadena,tEscuderia* escuderia);
+
 void mostrarEscuderias(tEscuderia* escuderias);
 char* devuelveNombreEscuderia(tEscuderia* vEscuderia, unsigned idBuscado, size_t ce); // Auxiliar Punto 4
 int MostrarpilotosXEscuderia(const char* nombrearchivo1, const char* nombrearchivo2); // Punto 5

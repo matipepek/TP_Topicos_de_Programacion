@@ -270,7 +270,7 @@ int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias)
 
     ordenamientoBurbuja(vPiloto, cantActivos);
 
-    printf("\n---- %35s %25s\n", "Ranking de Pilotos", "----");
+    printf("\n---- %45s %15s\n", "Ranking de Pilotos (Solo activos)", "----");
     printf("\n%-4s | %-25s | %-20s | %-7s\n", "N", "Nombre", "Escuderia", "Puntaje");
     printf("------------------------------------------------------------------\n");
 
@@ -285,14 +285,21 @@ int mostrarRankingPilotos(const char* archPilotos, const char* archEscuderias)
     return TODO_OK;
 }
 
-int buscaPiloto(const tPiloto* vPiloto, int cantPilotos, unsigned id)
+int buscaPiloto(FILE* archPiloto, unsigned id)
 {
-    int i;
+    rewind(archPiloto);
 
-    for(i=0; i<cantPilotos; i++)
+    tPiloto auxPiloto;
+    int ind = 0;
+
+    fread(&auxPiloto, sizeof(tPiloto), 1, archPiloto);
+    while(!feof(archPiloto))
     {
-        if((vPiloto + i)->id == id)
-            return i;
+        if(auxPiloto.id == id)
+            return ind;
+
+        ind++;
+        fread(&auxPiloto, sizeof(tPiloto), 1, archPiloto);
     }
 
     return -1;
@@ -442,3 +449,23 @@ int verBajas(const char *nombrearchivo)
     return TODO_OK;
 }
 //
+int devuelveCantPilotos(const char* archPilotos)
+{
+    FILE* pf = fopen(archPilotos, "rb");
+    tPiloto pilotoAux;
+
+    if(!pf)
+        return ERROR_APERTURA;
+
+    int cantPilotos = 0;
+
+    fread(&pilotoAux, sizeof(tPiloto), 1, pf);
+    while(fread(&pilotoAux, sizeof(tPiloto), 1, pf) == 1)
+    {
+        cantPilotos++;
+    }
+
+    fclose(pf);
+
+    return cantPilotos;
+}
