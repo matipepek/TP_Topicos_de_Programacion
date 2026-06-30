@@ -3,6 +3,13 @@
 void menu()
 {
     int estado;
+
+    /*
+        Generamos/Actualizamos el indice ordenado de forma invisible al iniciar el programa
+        para asegurar que las busquedas binarias siempre funcionen sobre datos frescos.
+    */
+    generarIndiceOrdenadoPilotos("pilotos.bin", "pilotos.idx");
+
     do{
         printf("\n");
         printf("0. Salir\n");
@@ -48,9 +55,10 @@ void menu()
                 printf("1. Volver atras\n");
                 printf("2. Modificar estado piloto\n");
                 printf("3. Modificar estado escuderia\n");
+                printf("4. Generar/Actualizar Indice Persistente de Pilotos (.idx)\n");
                 printf("Ingrese opcion: ");
                 scanf("%d", &estado);
-                while(!(estado>=1 && estado <=3))
+                while(!(estado>=1 && estado <=4))
                 {
                     printf("Ingrese opcion valida: ");
                     scanf("%d", &estado);
@@ -67,6 +75,20 @@ void menu()
                 case 3:
                     modificarEstadoEscuderia("escuderias.bin","indiceescuderias.bin");
                     verBajas("bajas.bin");
+                    break;
+                case 4:
+                    if(generarIndiceOrdenadoPilotos("pilotos.bin", "pilotos.idx") == TODO_OK)
+                    {
+                        printf("Indice persistente ordenado generado exitosamente en 'pilotos.idx'.\n");
+
+//                        /* Agregamos esto para testear visualmente */
+//                        printf("\n--- VERIFICACION DEL INDICE ---\n");
+//                        listarIndicePilotos("pilotos.idx");
+//                        printf("-------------------------------\n");
+                    }
+
+                    else
+                        printf("Error al generar el indice.\n");
                     break;
                 }
                 break;
