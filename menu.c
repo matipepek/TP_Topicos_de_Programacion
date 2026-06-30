@@ -39,7 +39,7 @@ void menu()
                 MostrarpilotosXEscuderia("escuderias.bin","pilotos.bin");
                 break;
             case 5:
-                verificaPuntosStats("pilotos.bin","estadisticas.bin");
+                verificaPuntosStats("pilotos.bin", "estadisticas.bin");
                 break;
             case 6:
                 CarrerasATxt("carreras.txt","carreras.dat");

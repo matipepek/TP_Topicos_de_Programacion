@@ -39,9 +39,9 @@ int actualizarPuntosEstadisticas(const char* archPilotos, const char* archEstadi
 int verificaPuntosStats(const char* archPilotos, const char* archEstadisticas); // Auxiliar Punto 3 (se puede borrar)
 int CarrerasATxt(const char* nombrearchivodestino, const char* nombrearchivoorigen); // punto 7
 
-/** // Lote de pruebas para estadisticas, se puede borrar
+ // Lote de pruebas para estadisticas, se puede borrar
 int crearLoteEstadisticas(const char* archEstadisticas);
 int estadisticasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen);
-void trozadoCampoVariableEstadisticas(char* cadena, tEstadisticaPiloto* vEstadisticas); **/
+void trozadoCampoVariableEstadisticas(char* cadena, tEstadisticaPiloto* vEstadisticas);
 
 #endif // CARRERAS_H_INCLUDED

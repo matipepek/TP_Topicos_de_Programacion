@@ -308,6 +308,7 @@ int verificaPuntosStats(const char* archPilotos, const char* archEstadisticas)
         return ERROR_APERTURA;
     }
 
+    float promedio;
 
     fseek(pfPilotos, 0, SEEK_END);
     size_t tamPil = ftell(pfPilotos);
@@ -347,13 +348,18 @@ int verificaPuntosStats(const char* archPilotos, const char* archEstadisticas)
     }
     printf("=========================================================================\n");
     printf("\n\n");
-    printf("Stats\n\n");
+    printf("Estadisticas\n\n");
     printf("%-7s | %-8s | %-11s | %-11s | %-11s | %-12s | %-8s\n",
-           "ID Pil.", "Carreras", "Victorias", "Mejor Pos.", "Peor Pos.", "Suma Posoc.", "Promedio");
+           "ID Pil.", "Carreras", "Victorias", "Mejor Pos.", "Peor Pos.", "Suma Posic.", "Promedio");
     printf("---------------------------------------------------------------------------------------\n");
     for(i=0; i<ceStats; i++)
     {
-        printf("ID: %-4d | %-8d | %-11d | %-11d | %-11d | %-12d\n", (vStats + i)->id_piloto, (vStats + i)->carreras_corridas, (vStats + i)->victorias, (vStats + i)->mejor_posicion, (vStats + i)->peor_posicion, (vStats + i)->suma_posiciones);
+        promedio = 0;
+        if((vStats + i)->carreras_corridas > 0)
+        {
+            promedio = (float)(vStats + i)->suma_posiciones / (vStats + i)->carreras_corridas;
+        }
+        printf("ID: %-4d | %-8d | %-11d | %-11d | %-11d | %-12d | %-11.2f\n", (vStats + i)->id_piloto, (vStats + i)->carreras_corridas, (vStats + i)->victorias, (vStats + i)->mejor_posicion, (vStats + i)->peor_posicion, (vStats + i)->suma_posiciones, promedio);
     }
     printf("=======================================================================================\n");
 
@@ -407,7 +413,6 @@ int CarrerasATxt(const char* nombrearchivodestino, const char* nombrearchivoorig
     return TODO_OK;
 }
 
-/**
 int crearLoteEstadisticas(const char* archEstadisticas)
 {
     tEstadisticaPiloto vEstadisticas[] = {
@@ -516,4 +521,4 @@ int estadisticasABin(const char* nombrearchivodestino, const char* nombrearchivo
     fclose(pf2);
     return TODO_OK;
 }
-*/
+
