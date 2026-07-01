@@ -7,7 +7,7 @@ int main(int argc, char* argv[])
     //crearLoteEscuderias("escuderias.txt");
     //escuderiasABin("escuderias.bin","escuderias.txt");
     //listarIndiceEscuderias("indiceescuderias.bin");
-
+    //listarEscuderias("escuderias.bin");
     menu();
     return 0;
 }

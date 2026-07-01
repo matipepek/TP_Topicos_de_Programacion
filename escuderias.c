@@ -306,3 +306,124 @@ int busquedaEstadoEscuderia(char estado)
     }
     return ERROR_NO_ENCONTRADO;
 }
+
+int modificaDatosEscuderia(const char* archBin, const char* archIdx)
+{
+    FILE* pf = fopen(archBin, "rb+");
+    if(!pf)
+    {
+        return ERROR_APERTURA;
+    }
+
+    int estadoInterno, pos;
+
+    char nuevoCodigo[4];
+    char nuevoNombre[30];
+    char nuevoPais[50];
+
+    unsigned id;
+    tEscuderia auxEscuderia;
+
+    printf("Ingrese la ID de la escuderia a modificar: ");
+    scanf("%u", &id);
+
+    pos = busquedaIdEscuderia(id, archIdx);
+    while(pos == ERROR_NO_ENCONTRADO)
+    {
+        printf("\nERROR - ID no encontrada | Ingrese la ID de la escuderia a modificar: ");
+        scanf("%u", &id);
+
+        pos = busquedaIdEscuderia(id, archIdx);
+    }
+
+        fseek(pf, pos * sizeof(tEscuderia), SEEK_SET);
+        fread(&auxEscuderia, sizeof(tEscuderia), 1, pf);
+        do
+        {
+            printf("0. Volver atras\n");
+            printf("1. Modificar codigo de escuderia\n");
+            printf("2. Modificar nombre de escuderia\n");
+            printf("3. Modificar pais de escuderia\n");
+            printf("Ingrese opcion: ");
+            scanf("%d", &estadoInterno);
+            getchar();
+            while(!(estadoInterno>=0 && estadoInterno <=3))
+            {
+                printf("Ingrese opcion valida: ");
+                scanf("%d", &estadoInterno);
+                getchar();
+            }
+
+            switch(estadoInterno)
+            {
+                case 0: break;
+                case 1:
+                    printf("Ingrese nuevo codigo de escuderia(maximo 4 caracteres): ");
+                    fgets(nuevoCodigo, 4, stdin);
+                    limpiarSalto(nuevoCodigo);
+
+                    strcpy(auxEscuderia.codigo, nuevoCodigo);
+
+                    fseek(pf, -(long)sizeof(tEscuderia), SEEK_CUR);
+                    fwrite(&auxEscuderia, sizeof(tEscuderia), 1, pf);
+                    fflush(pf);
+                    break;
+                case 2:
+                    printf("Ingrese nuevo nombre de escuderia (maximo 30 caracteres): ");
+                    fgets(nuevoNombre, 30, stdin);
+                    limpiarSalto(nuevoNombre);
+
+                    strcpy(auxEscuderia.nombre, nuevoNombre);
+
+                    fseek(pf, -(long)sizeof(tEscuderia), SEEK_CUR);
+                    fwrite(&auxEscuderia, sizeof(tEscuderia), 1, pf);
+                    fflush(pf);
+                    break;
+                case 3:
+                    printf("Ingrese nuevo pais de escuderia (maximo 50 caracteres): ");
+                    fgets(nuevoPais, 50, stdin);
+                    limpiarSalto(nuevoPais);
+
+                    strcpy(auxEscuderia.pais, nuevoPais);
+
+                    fseek(pf, -(long)sizeof(tEscuderia), SEEK_CUR);
+                    fwrite(&auxEscuderia, sizeof(tEscuderia), 1, pf);
+                    fflush(pf);
+                    break;
+            }
+        } while(estadoInterno);
+
+
+
+    fclose(pf);
+
+    return TODO_OK;
+}
+
+int listarEscuderias(const char* archBin)
+{
+    FILE* pf = fopen(archBin, "rb");
+    if(!pf)
+    {
+        return ERROR_APERTURA;
+    }
+
+    tEscuderia escuderia;
+
+    printf("\n%-5s %-5s %-30s %-20s %-10s\n",
+           "ID", "COD", "NOMBRE", "PAIS", "ESTADO");
+    printf("--------------------------------------------------------------------------\n");
+
+    while(fread(&escuderia, sizeof(tEscuderia), 1, pf) == 1)
+    {
+        printf("%-5u %-5s %-30s %-20s %-10s\n",
+               escuderia.id,
+               escuderia.codigo,
+               escuderia.nombre,
+               escuderia.pais,
+               escuderia.estado ? "Activo" : "Inactivo");
+    }
+
+    fclose(pf);
+    return TODO_OK;
+}

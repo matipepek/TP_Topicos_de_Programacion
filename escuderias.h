@@ -41,4 +41,6 @@ int modificarEstadoEscuderia(const char* nombrearchivo, const char* nombrearchiv
 int listarIndiceEscuderias(const char* nombrearchivo);
 int busquedaIdEscuderia(unsigned id, const char* nombrearchivoindice);
 int busquedaEstadoEscuderia(char estado);
+int modificaDatosEscuderia(const char* archBin, const char* archIdx);
+int listarEscuderias(const char* archBin);
 #endif // ESCUDERIAS_H_INCLUDED

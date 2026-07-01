@@ -55,10 +55,11 @@ void menu()
                 printf("1. Volver atras\n");
                 printf("2. Modificar estado piloto\n");
                 printf("3. Modificar estado escuderia\n");
-                printf("4. Generar/Actualizar Indice Persistente de Pilotos (.idx)\n");
+                printf("4. Modificar datos escuderia\n");
+                printf("5. Generar/Actualizar Indice Persistente de Pilotos (.idx)\n");
                 printf("Ingrese opcion: ");
                 scanf("%d", &estado);
-                while(!(estado>=1 && estado <=4))
+                while(!(estado>=1 && estado <=5))
                 {
                     printf("Ingrese opcion valida: ");
                     scanf("%d", &estado);
@@ -77,14 +78,17 @@ void menu()
                     verBajas("bajas.bin");
                     break;
                 case 4:
+                    modificaDatosEscuderia("escuderias.bin","indiceescuderias.bin");
+                    break;
+                case 5:
                     if(generarIndiceOrdenadoPilotos("pilotos.bin", "pilotos.idx") == TODO_OK)
                     {
                         printf("Indice persistente ordenado generado exitosamente en 'pilotos.idx'.\n");
 
                                 /*Agregamos esto para testear visualmente */
-//                              printf("\n--- VERIFICACION DEL INDICE ---\n");
-//                              listarIndicePilotos("pilotos.idx");
-//                              printf("-------------------------------\n");
+//                             printf("\n--- VERIFICACION DEL INDICE ---\n");
+//                             listarIndicePilotos("pilotos.idx");
+//                             printf("-------------------------------\n");
                     }
 
                     else
