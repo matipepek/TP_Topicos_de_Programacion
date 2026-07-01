@@ -20,6 +20,7 @@ typedef struct
 tFecha descomponeFecha(unsigned long long fecha);
 int esBisiesto(unsigned int anio);
 int esDiaValido(unsigned int dia, unsigned int mes, int bisiesto);
-int esFechaValida(unsigned long long fecha);
+int esFechaValida(unsigned long long fecha); // Año actual
+int esFechaNacimientoValida(unsigned long long fecha); // Año desde 1975
 
 #endif // FECHA_H_INCLUDED

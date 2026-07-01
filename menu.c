@@ -36,7 +36,7 @@ void menu()
                 listarPilotosyPuntos("pilotos.bin");
                 break;
             case 2:
-                registrarCarrera("carreras.dat", "pilotos.bin", "estadisticas.bin");
+                registrarCarrera("carreras.dat", "pilotos.bin", "estadisticas.bin", "pilotos.idx");
                 //verificarCarrerasDat("carreras.dat");
                 break;
             case 3:
@@ -56,9 +56,10 @@ void menu()
                 printf("2. Modificar estado piloto\n");
                 printf("3. Modificar estado escuderia\n");
                 printf("4. Generar/Actualizar Indice Persistente de Pilotos (.idx)\n");
+                printf("5. Modificar datos de un piloto\n");
                 printf("Ingrese opcion: ");
                 scanf("%d", &estado);
-                while(!(estado>=1 && estado <=4))
+                while(!(estado>=1 && estado <=5))
                 {
                     printf("Ingrese opcion valida: ");
                     scanf("%d", &estado);
@@ -90,8 +91,12 @@ void menu()
                     else
                         printf("Error al generar el indice.\n");
                     break;
+                case 5:
+                    modificaDatosPiloto("pilotos.bin", "pilotos.idx", "indiceescuderias.bin");
+                    break;
                 }
                 break;
+
         }
     }while(estado);
 }

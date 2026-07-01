@@ -31,7 +31,7 @@ typedef struct
 } tEstadisticaPiloto;
 
 void limpiarSalto(char* cadena);
-int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const char* archEstadisticas); // Punto 2
+int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const char* archEstadisticas, const char* archIdx); // Punto 2
 void verificarCarrerasDat(const char* nombreArchivo);
 unsigned obtenerPuntos(unsigned posicion); // Auxiliar Punto 3
 int buscaEstadistica(FILE* archEstadisticas, unsigned id); // Auxiliar Punto 3

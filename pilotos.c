@@ -1,4 +1,5 @@
 #include "pilotos.h"
+#include "fecha.h"
 
 
 void ordenamientoBurbuja(tPiloto* vPiloto, size_t ce)
@@ -442,7 +443,6 @@ int devuelveCantPilotos(const char* archPilotos)
 
     int cantPilotos = 0;
 
-    fread(&pilotoAux, sizeof(tPiloto), 1, pf);
     while(fread(&pilotoAux, sizeof(tPiloto), 1, pf) == 1)
     {
         cantPilotos++;
@@ -571,4 +571,158 @@ int busquedaBinariaPiloto(unsigned idBuscado, const char* archIdx)
 
     fclose(pf);
     return ERROR_NO_ENCONTRADO; // No existe
+}
+
+int cuentaPilotosXEscuderia(FILE* archPilotos, unsigned id)
+{
+    rewind(archPilotos);
+
+    tPiloto auxPiloto;
+    int cont = 0;
+
+    while(fread(&auxPiloto, sizeof(tPiloto), 1, archPilotos) == 1)
+    {
+        if(auxPiloto.id_escuderia == id)
+            cont++;
+    }
+
+    return cont;
+}
+
+int modificaDatosPiloto(const char* archPiloto, const char* archIdxPiloto, const char* archIdxEscuderia)
+{
+    FILE* pf = fopen(archPiloto, "rb+");
+    if(!pf)
+    {
+        return ERROR_APERTURA;
+    }
+
+    int estadoInterno, pos, posEscuderia;
+
+    char nuevoNombre[30];
+    char nuevaNacionalidad[30];
+    unsigned idEscuderiaNueva;
+    unsigned long long nuevaFechaNacimiento;
+
+    unsigned id;
+    tPiloto auxPiloto;
+
+    printf("Ingrese la ID del piloto a modificar (0 para volver atras): ");
+    scanf("%u", &id);
+
+    pos = busquedaBinariaPiloto(id, archIdxPiloto);
+    while(pos == ERROR_NO_ENCONTRADO && id != 0)
+    {
+        printf("\nERROR - ID no encontrada | Ingrese la ID del piloto a modificar (0 para volver atras): ");
+        scanf("%u", &id);
+
+        pos = busquedaBinariaPiloto(id, archIdxPiloto);
+    }
+
+    if(id != 0)
+    {
+        do
+        {
+            printf("0. Volver atras\n");
+            printf("1. Modificar nombre del piloto\n");
+            printf("2. Modificar nacionalidad del piloto\n");
+            printf("3. Modificar fecha de nacimiento del piloto\n");
+            printf("4. Modificar ID de escuderia del piloto\n");
+            printf("Ingrese opcion: ");
+            scanf("%d", &estadoInterno);
+            getchar();
+            while(!(estadoInterno>=0 && estadoInterno <=4))
+            {
+                printf("Ingrese opcion valida: ");
+                scanf("%d", &estadoInterno);
+                getchar();
+            }
+
+            switch(estadoInterno)
+            {
+                case 0: break;
+                case 1:
+                    printf("Ingrese nuevo nombre del piloto (maximo 30 caracteres): ");
+                    fgets(nuevoNombre, 30, stdin);
+                    limpiarSalto(nuevoNombre);
+
+                    fseek(pf, pos * sizeof(tPiloto), SEEK_SET);
+                    fread(&auxPiloto, sizeof(tPiloto), 1, pf);
+
+                    strcpy(auxPiloto.nombre, nuevoNombre);
+
+                    fseek(pf, -(long)sizeof(tPiloto), SEEK_CUR);
+                    fwrite(&auxPiloto, sizeof(tPiloto), 1, pf);
+                    fflush(pf);
+                    break;
+                case 2:
+                    printf("Ingrese nueva nacionalidad del piloto (maximo 30 caracteres): ");
+                    fgets(nuevaNacionalidad, 30, stdin);
+                    limpiarSalto(nuevaNacionalidad);
+
+                    fseek(pf, pos * sizeof(tPiloto), SEEK_SET);
+                    fread(&auxPiloto, sizeof(tPiloto), 1, pf);
+
+                    strcpy(auxPiloto.nacionalidad, nuevaNacionalidad);
+
+                    fseek(pf, -(long)sizeof(tPiloto), SEEK_CUR);
+                    fwrite(&auxPiloto, sizeof(tPiloto), 1, pf);
+                    fflush(pf);
+                    break;
+                case 3:
+                    printf("Ingrese nueva fecha de nacimiento del piloto (Formato AAAAMMDD): ");
+                    scanf("%llu", &nuevaFechaNacimiento);
+
+                    while(esFechaNacimientoValida(nuevaFechaNacimiento) != TODO_OK)
+                    {
+                        printf("\nERROR - Fecha invalida | Ingrese nueva fecha de nacimiento del piloto (Formato AAAAMMDD): ");
+                        scanf("%llu", &nuevaFechaNacimiento);
+                    }
+
+                    fseek(pf, pos * sizeof(tPiloto), SEEK_SET);
+                    fread(&auxPiloto, sizeof(tPiloto), 1, pf);
+
+                    auxPiloto.fechaNacimiento = nuevaFechaNacimiento;
+
+                    fseek(pf, -(long)sizeof(tPiloto), SEEK_CUR);
+                    fwrite(&auxPiloto, sizeof(tPiloto), 1, pf);
+                    fflush(pf);
+                    break;
+                case 4:
+                    printf("Ingrese la nueva ID de escuderia del piloto: ");
+                    scanf("%u", &idEscuderiaNueva);
+
+                    posEscuderia = busquedaIdEscuderia(idEscuderiaNueva, archIdxEscuderia);
+                    while(posEscuderia == ERROR_NO_ENCONTRADO)
+                    {
+                        printf("\nERROR - ID no encontrada | Ingrese la nueva ID de escuderia del piloto: ");
+                        scanf("%u", &idEscuderiaNueva);
+
+                        posEscuderia = busquedaIdEscuderia(idEscuderiaNueva, archIdxEscuderia);
+                    }
+
+                    if(cuentaPilotosXEscuderia(pf, idEscuderiaNueva) >= 2)
+                    {
+                        printf("\nEscuderia llena.\n");
+                    } else
+                    {
+                        fseek(pf, pos * sizeof(tPiloto), SEEK_SET);
+                        fread(&auxPiloto, sizeof(tPiloto), 1, pf);
+
+                        auxPiloto.id_escuderia = idEscuderiaNueva;
+
+                        fseek(pf, -(long)sizeof(tPiloto), SEEK_CUR);
+                        fwrite(&auxPiloto, sizeof(tPiloto), 1, pf);
+                        fflush(pf);
+
+                        printf("\nEscuderia con espacio, ID actualizado.\n");
+                    }
+                    break;
+            }
+        } while(estadoInterno);
+    }
+
+    fclose(pf);
+
+    return TODO_OK;
 }
