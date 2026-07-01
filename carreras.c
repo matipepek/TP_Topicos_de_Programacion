@@ -14,11 +14,11 @@ void limpiarSalto(char* cadena)
     }
 }
 
-int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const char* archEstadisticas)
+int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const char* archEstadisticas, const char* archIdx)
 {
     tCarreras carrera;
     FILE* pf;
-    int i, cantPilotos; // Usamos la cantidad de pilotos totales para validar los máximos que pueden participar
+    int i, cantPilotos, posID; // Usamos la cantidad de pilotos totales para validar los máximos que pueden participar
     int** matriz = NULL;
     int* bloqueDatos = NULL; // Puntero auxiliar para el bloque de memoria contigua
 
@@ -104,6 +104,15 @@ int registrarCarrera(const char* nombreArchivo, const char* archPilotos, const c
             //ID del piloto (columna 1)
             printf("Ingrese el ID del piloto que finalizo en la posicion %d: ", matriz[i][0]);
             scanf("%d", &matriz[i][1]);
+
+            posID = busquedaBinariaPiloto((unsigned)matriz[i][1], archIdx);
+            while(posID == ERROR_NO_ENCONTRADO)
+            {
+                printf("\nERROR - ID no encontrada | Ingrese el ID del piloto que finalizo en la posicion %d: ", matriz[i][0]);
+                scanf("%d", &matriz[i][1]);
+
+                posID = busquedaBinariaPiloto((unsigned)matriz[i][1], archIdx);
+            }
         }
 
         int actualizacion = actualizarPuntosEstadisticas(archPilotos, archEstadisticas, carrera); // Se lleva el struct tCarrera para actualizar puntos y estadísticas de pilotos

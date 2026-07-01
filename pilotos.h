@@ -61,4 +61,7 @@ int devuelveCantPilotos(const char* archPilotos);
 int generarIndiceOrdenadoPilotos(const char* archPilotos, const char* archIdx);
 int busquedaBinariaPiloto(unsigned idBuscado, const char* archIdx);
 
+int cuentaPilotosXEscuderia(FILE* archPilotos, unsigned id);
+int modificaDatosPiloto(const char* archPiloto, const char* archIdxPiloto, const char* archIdxEscuderia);
+
 #endif // PILOTOS_H_INCLUDED

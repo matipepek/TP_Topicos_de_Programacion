@@ -53,3 +53,18 @@ int esFechaValida(unsigned long long fecha) // Usa el rango de fecha, mes y el a
 
     return FECHA_INVALIDA;
 }
+
+int esFechaNacimientoValida(unsigned long long fecha) // Usa el rango de fecha, mes y el año para saber si es una fecha válida
+{
+    tFecha fechaAux;
+    fechaAux = descomponeFecha(fecha);
+    if(fechaAux.anio > 1975)
+    {
+        if(fechaAux.mes > 0 && fechaAux.mes < 13){
+            if(esDiaValido(fechaAux.dia, fechaAux.mes, esBisiesto(fechaAux.anio)))
+                return TODO_OK;
+        }
+    }
+
+    return FECHA_INVALIDA;
+}
