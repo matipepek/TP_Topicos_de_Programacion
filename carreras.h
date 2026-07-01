@@ -37,6 +37,5 @@ unsigned obtenerPuntos(unsigned posicion); // Auxiliar Punto 3
 int buscaEstadistica(FILE* archEstadisticas, unsigned id); // Auxiliar Punto 3
 int actualizarPuntosEstadisticas(const char* archPilotos, const char* archEstadisticas, tCarreras vCarrera); // Punto 3 + Sistema incremental de estadísticas
 int verificaPuntosStats(const char* archPilotos, const char* archEstadisticas); // Auxiliar Punto 3 (se puede borrar)
-int CarrerasATxt(const char* nombrearchivodestino, const char* nombrearchivoorigen); // punto 7
-int exportarCarrerasTXT(const char* archBin, const char* archTxt);
+int exportarCarrerasTXT(const char* archBin, const char* archTxt); // punto 7
 #endif // CARRERAS_H_INCLUDED
