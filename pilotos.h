@@ -57,4 +57,8 @@ int verBajas(const char *nombrearchivo);
 
 int devuelveCantPilotos(const char* archPilotos);
 
+//Indice persistente
+int generarIndiceOrdenadoPilotos(const char* archPilotos, const char* archIdx);
+int busquedaBinariaPiloto(unsigned idBuscado, const char* archIdx);
+
 #endif // PILOTOS_H_INCLUDED

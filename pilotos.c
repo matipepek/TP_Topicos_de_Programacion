@@ -362,12 +362,12 @@ int modificarEstadoPiloto(const char* nombrearchivo, const char* nombrearchivoin
     printf("Escriba la ID del piloto a modificar el estado: \n");
     scanf("%u",&id);
     getchar();
-    pos = busquedaIdPiloto(id,nombrearchivoindice);
+    pos = busquedaBinariaPiloto(id, nombrearchivoindice);
     while(pos<0)
     {
         printf("Esa id no existe, reintente: \n");
         scanf("%u",&id);
-        pos = busquedaIdPiloto(id,nombrearchivoindice);
+        pos = busquedaBinariaPiloto(id, nombrearchivoindice);
     }
     fseek(pf, pos*sizeof(tPiloto),SEEK_SET);
     fread(&piloto, sizeof(tPiloto),1, pf);
@@ -468,4 +468,124 @@ int devuelveCantPilotos(const char* archPilotos)
     fclose(pf);
 
     return cantPilotos;
+}
+
+int generarIndiceOrdenadoPilotos(const char* archPilotos, const char* archIdx)
+{
+    tPiloto pilotoTemp;
+    tIndicePiloto nuevoIndice, actual;
+    int i = 0; /* Variable para guardar el offset */
+    long posDestino, fin, j;
+    int encontrado;
+
+    FILE* pfPilotos = fopen(archPilotos, "rb");
+    if(!pfPilotos)
+        return ERROR_APERTURA;
+
+    /* Abrimos en w+b para crear el archivo desde cero y poder leer/escribir sobre el */
+    FILE* pfIdx = fopen(archIdx, "w+b");
+    if(!pfIdx)
+    {
+        fclose(pfPilotos);
+        return ERROR_APERTURA;
+    }
+
+
+    /* Leemos el archivo binario registro por registro (O(1) de memoria RAM) */
+    while(fread(&pilotoTemp, sizeof(tPiloto), 1, pfPilotos) == 1)
+    {
+        nuevoIndice.id = pilotoTemp.id;
+        nuevoIndice.indice = i;
+
+        /* 1. Buscamos secuencialmente donde debe ir insertado en el archivo .idx */
+        posDestino = 0;
+        encontrado = 0; /* Reiniciamos la bandera para cada piloto nuevo */
+        fseek(pfIdx, 0, SEEK_SET);
+
+        /* La condicion evalúa tanto la lectura como la bandera */
+        while(!encontrado && fread(&actual, sizeof(tIndicePiloto), 1, pfIdx) == 1)
+        {
+            if(actual.id > nuevoIndice.id)
+            {
+                encontrado = 1; /* Cambiamos el estado para salir del ciclo limpiamente */
+            }
+            else
+            {
+                posDestino++;
+            }
+        }
+
+        /* 2. Determinamos la cantidad de registros actuales en el indice */
+        fseek(pfIdx, 0, SEEK_END);
+        fin = ftell(pfIdx) / sizeof(tIndicePiloto);
+
+        /*
+            3. Desplazamos un lugar hacia la derecha a todos los registros que son mayores
+               Lo hacemos de atras hacia adelante para no pisar la informacion
+        */
+        for(j = fin - 1; j >= posDestino; j--)
+        {
+            fseek(pfIdx, j * sizeof(tIndicePiloto), SEEK_SET);
+            fread(&actual, sizeof(tIndicePiloto), 1, pfIdx);
+
+            fseek(pfIdx, (j + 1) * sizeof(tIndicePiloto), SEEK_SET);
+            fwrite(&actual, sizeof(tIndicePiloto), 1, pfIdx);
+        }
+
+        /* 4. Insertamos el nuevo indice en la posicion que quedo liberada */
+        fseek(pfIdx, posDestino * sizeof(tIndicePiloto), SEEK_SET);
+        fwrite(&nuevoIndice, sizeof(tIndicePiloto), 1, pfIdx);
+
+        i++; /* Avanzamos el contador para el siguiente registro del archivo original */
+    }
+
+    fclose(pfPilotos);
+    fclose(pfIdx);
+
+    return TODO_OK;
+}
+
+int busquedaBinariaPiloto(unsigned idBuscado, const char* archIdx)
+{
+    FILE* pf = fopen(archIdx, "rb");
+    if(!pf)
+        return ERROR_APERTURA;
+
+    tIndicePiloto indiceLeido;
+    long limInf = 0;
+    long limSup, medio;
+
+    fseek(pf, 0, SEEK_END);
+    long cantRegistros = ftell(pf) / sizeof(tIndicePiloto);
+
+    if(cantRegistros == 0)
+    {
+        fclose(pf);
+        return ERROR_NO_ENCONTRADO;
+    }
+
+    limSup = cantRegistros - 1;
+
+    while (limInf <= limSup)
+    {
+        medio = (limInf + limSup) / 2;
+
+        // Saltamos directamente a la mitad que nos interesa
+        fseek(pf, medio * sizeof(tIndicePiloto), SEEK_SET);
+        fread(&indiceLeido, sizeof(tIndicePiloto), 1, pf);
+
+        if (indiceLeido.id == idBuscado)
+        {
+            fclose(pf);
+            return indiceLeido.indice;
+        }
+
+        if (indiceLeido.id < idBuscado)
+            limInf = medio + 1; // Descartamos la mitad inferior
+        else
+            limSup = medio - 1; // Descartamos la mitad superior
+    }
+
+    fclose(pf);
+    return ERROR_NO_ENCONTRADO; // No existe
 }
