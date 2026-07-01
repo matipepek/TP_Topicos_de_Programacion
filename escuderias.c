@@ -324,11 +324,11 @@ int modificaDatosEscuderia(const char* archBin, const char* archIdx)
     unsigned id;
     tEscuderia auxEscuderia;
 
-    printf("Ingrese la ID de la escuderia a modificar: ");
+    printf("Ingrese la ID de la escuderia a modificar (0 para volver atras): ");
     scanf("%u", &id);
 
     pos = busquedaIdEscuderia(id, archIdx);
-    while(pos == ERROR_NO_ENCONTRADO)
+    while(pos == ERROR_NO_ENCONTRADO && id != 0)
     {
         printf("\nERROR - ID no encontrada | Ingrese la ID de la escuderia a modificar: ");
         scanf("%u", &id);
@@ -336,6 +336,8 @@ int modificaDatosEscuderia(const char* archBin, const char* archIdx)
         pos = busquedaIdEscuderia(id, archIdx);
     }
 
+    if(id!=0)
+    {
         fseek(pf, pos * sizeof(tEscuderia), SEEK_SET);
         fread(&auxEscuderia, sizeof(tEscuderia), 1, pf);
         do
@@ -393,10 +395,8 @@ int modificaDatosEscuderia(const char* archBin, const char* archIdx)
             }
         } while(estadoInterno);
 
-
-
+    }
     fclose(pf);
-
     return TODO_OK;
 }
 

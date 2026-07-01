@@ -60,7 +60,7 @@ void menu()
                 printf("6. Modificar datos escuderia\n");
                 printf("Ingrese opcion: ");
                 scanf("%d", &estado);
-                while(!(estado>=1 && estado <=5))
+                while(!(estado>=1 && estado <=6))
                 {
                     printf("Ingrese opcion valida: ");
                     scanf("%d", &estado);
