@@ -49,7 +49,7 @@ void menu()
                 verificaPuntosStats("pilotos.bin", "estadisticas.bin");
                 break;
             case 6:
-                CarrerasATxt("carreras.txt","carreras.dat");
+                exportarCarrerasTXT("carreras.dat","carreras.txt");
                 break;
             case 7:
                 printf("1. Volver atras\n");
@@ -69,7 +69,7 @@ void menu()
                 case 1:
                     break;
                 case 2:
-                    modificarEstadoPiloto("pilotos.bin","indicepilotos.bin");
+                    modificarEstadoPiloto("pilotos.bin","pilotos.idx");
                     verBajas("bajas.bin");
                     break;
                 case 3:
@@ -81,10 +81,10 @@ void menu()
                     {
                         printf("Indice persistente ordenado generado exitosamente en 'pilotos.idx'.\n");
 
-//                        /* Agregamos esto para testear visualmente */
-//                        printf("\n--- VERIFICACION DEL INDICE ---\n");
-//                        listarIndicePilotos("pilotos.idx");
-//                        printf("-------------------------------\n");
+                                /*Agregamos esto para testear visualmente */
+//                              printf("\n--- VERIFICACION DEL INDICE ---\n");
+//                              listarIndicePilotos("pilotos.idx");
+//                              printf("-------------------------------\n");
                     }
 
                     else

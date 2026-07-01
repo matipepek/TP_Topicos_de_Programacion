@@ -369,156 +369,70 @@ int verificaPuntosStats(const char* archPilotos, const char* archEstadisticas)
     return TODO_OK;
 }
 
-int CarrerasATxt(const char* nombrearchivodestino, const char* nombrearchivoorigen)
+int exportarCarrerasTXT(const char* archBin, const char* archTxt)
 {
-    FILE* pf1 = fopen(nombrearchivoorigen, "rb");
-    if(!pf1)
-        return ERROR_APERTURA;
-
-    FILE* pf2 = fopen(nombrearchivodestino, "wt");
-    if(!pf2)
-    {
-        fclose(pf1);
-        return ERROR_APERTURA;
-    }
-
     tCarreras carrera;
-    int resultado[2];
+    int i;
+    int* resultados = NULL;
 
-    while(fread(&carrera, sizeof(carrera), 1, pf1) == 1)
+    FILE* pfBin = fopen(archBin, "rb");
+    FILE* pfTxt = fopen(archTxt, "wt");
+
+    if(!pfBin)
+        return ERROR_APERTURA;
+
+    if(!pfTxt)
     {
-        fprintf(pf2, "%d|%s|%llu|%d|%d\n",  carrera.id,
-                                            carrera.circuito,
-                                            carrera.fecha,
-                                            carrera.estado,
-                                            carrera.Cant_resultados);
+        fclose(pfBin);
+        return ERROR_APERTURA;
+    }
 
-        for(int i = 0; i < carrera.Cant_resultados; i++)
+    while(fread(&carrera.id, sizeof(int), 1, pfBin) == 1)
+    {
+        fread(carrera.circuito, sizeof(char), 20, pfBin);
+        carrera.circuito[19] = '\0';
+        fread(&carrera.fecha, sizeof(unsigned long long), 1, pfBin);
+        fread(&carrera.estado, sizeof(int), 1, pfBin);
+        fread(&carrera.Cant_resultados, sizeof(int), 1, pfBin);
+
+        fprintf(pfTxt, "=====================================\n");
+        fprintf(pfTxt, "ID: %d\n", carrera.id);
+        fprintf(pfTxt, "Circuito: %s\n", carrera.circuito);
+        fprintf(pfTxt, "Fecha: %llu\n", carrera.fecha);
+        fprintf(pfTxt, "Estado: %s\n", carrera.estado ? "Finalizada" : "Suspendida");
+        fprintf(pfTxt, "Cantidad de resultados: %d\n", carrera.Cant_resultados);
+
+        if(carrera.Cant_resultados > 0)
         {
-            if(fread(resultado, sizeof(int), 2, pf1) != 2)
-                {
-                    fclose(pf1);
-                    fclose(pf2);
-                    return ERROR_ARCH_CORRUPTO;
-                }
+            resultados = (int*)malloc(carrera.Cant_resultados * 2 * sizeof(int));
 
-            fprintf(pf2, "%d|%d\n", resultado[0],   // posición
-                                    resultado[1]);  // id piloto
+            if(!resultados)
+            {
+                fclose(pfBin);
+                fclose(pfTxt);
+                return ERROR_SIN_MEMORIA;
+            }
+
+            fread(resultados, sizeof(int), carrera.Cant_resultados * 2, pfBin);
+
+            fprintf(pfTxt, "\nResultados:\n");
+
+            for(i = 0; i < carrera.Cant_resultados; i++)
+            {
+                fprintf(pfTxt,
+                        "Posicion %d - Piloto ID %d\n", resultados[i * 2],
+                                                        resultados[i * 2 + 1]);
+            }
+
+            free(resultados);
+            resultados = NULL;
         }
+
+        fprintf(pfTxt, "\n");
     }
 
-    fclose(pf1);
-    fclose(pf2);
+    fclose(pfBin);
+    fclose(pfTxt);
 
     return TODO_OK;
 }
-
-int crearLoteEstadisticas(const char* archEstadisticas)
-{
-    tEstadisticaPiloto vEstadisticas[] = {
-    { 145 },
-    { 192 },
-    { 250 },
-    { 264 },
-    { 284 },
-    { 496 },
-    { 497 },
-    { 500 },
-    { 542 },
-    { 568 },
-    { 589 },
-    { 599 },
-    { 600 },
-    { 648 },
-    { 678 },
-    { 700 },
-    { 701 },
-    { 752 },
-    { 846 },
-    { 873 },
-    { 962 },
-    { 999 }
-
-    };
-
-    int ce = sizeof(vEstadisticas)/sizeof(tEstadisticaPiloto);
-    tEstadisticaPiloto* pStats = vEstadisticas;
-
-    FILE* pf = fopen(archEstadisticas, "wt");
-    if(!pf)
-    {
-        return ERROR_APERTURA;
-    }
-    for(int i = 0; i<ce; i++)
-    {
-        fprintf(pf, "%d|%d|%d|%d|%d|%d\n", pStats->id_piloto, pStats->carreras_corridas, pStats->victorias, pStats->mejor_posicion, pStats->peor_posicion, pStats->suma_posiciones);
-        pStats++;
-    }
-    fclose(pf);
-    return TODO_OK;
-}
-
-void trozadoCampoVariableEstadisticas(char* cadena, tEstadisticaPiloto* vEstadisticas)
-{
-    char* aux;
-
-    aux = strchr(cadena, '\n');
-    if(aux) *aux = '\0';
-
-    aux = strrchr(cadena, '|');
-    if(!aux) return;
-    sscanf(aux + 1, "%d", &vEstadisticas->suma_posiciones);
-    *aux = '\0';
-
-    aux = strrchr(cadena, '|');
-    if(!aux) return;
-    sscanf(aux + 1, "%d", &vEstadisticas->peor_posicion);
-    *aux = '\0';
-
-    aux = strrchr(cadena, '|');
-    if(!aux) return;
-    sscanf(aux + 1, "%d", &vEstadisticas->mejor_posicion);
-    *aux = '\0';
-
-    aux = strrchr(cadena, '|');
-    if(!aux) return;
-    sscanf(aux + 1, "%d", &vEstadisticas->victorias);
-    *aux = '\0';
-
-    aux = strrchr(cadena, '|');
-    if(!aux) return;
-    sscanf(aux + 1, "%d", &vEstadisticas->carreras_corridas);
-    *aux = '\0';
-
-    sscanf(cadena, "%d", &vEstadisticas->id_piloto);
-}
-
-int estadisticasABin(const char* nombrearchivodestino, const char* nombrearchivoorigen)
-{
-    tEstadisticaPiloto vEstadisticas;
-    char cadena[BUFFER];
-    FILE* pf = fopen(nombrearchivoorigen, "rt");
-    FILE* pf2 = fopen(nombrearchivodestino, "wb");
-
-    if(!pf)
-    {
-        return ERROR_APERTURA;
-    }
-
-    if(!pf2)
-    {
-        fclose(pf);
-        return ERROR_APERTURA;
-    }
-
-    while(fgets(cadena, BUFFER, pf))
-    {
-        trozadoCampoVariableEstadisticas(cadena, &vEstadisticas);
-        fwrite(&vEstadisticas, sizeof(tEstadisticaPiloto), 1, pf2);
-    }
-
-    fclose(pf);
-    fclose(pf2);
-    return TODO_OK;
-}
-

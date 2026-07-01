@@ -1,22 +1,79 @@
-485|monza|20260509|1|22
-2|962
-3|873
-4|846
-5|752
-6|701
-7|700
-8|678
-9|648
-10|600
-11|599
-12|589
-13|568
-14|542
-15|500
-16|497
-17|496
-18|284
-19|264
-20|250
-21|192
-22|145
+=====================================
+ID: 105
+Circuito: Monza
+Fecha: 20260103
+Estado: Finalizada
+Cantidad de resultados: 5
+
+Resultados:
+Posicion 1 - Piloto ID 600
+Posicion 2 - Piloto ID 497
+Posicion 3 - Piloto ID 648
+Posicion 4 - Piloto ID 700
+Posicion 5 - Piloto ID 701
+
+=====================================
+ID: 106
+Circuito: Silverstone
+Fecha: 20260205
+Estado: Finalizada
+Cantidad de resultados: 7
+
+Resultados:
+Posicion 1 - Piloto ID 648
+Posicion 2 - Piloto ID 600
+Posicion 3 - Piloto ID 497
+Posicion 4 - Piloto ID 250
+Posicion 5 - Piloto ID 568
+Posicion 6 - Piloto ID 589
+Posicion 7 - Piloto ID 599
+
+=====================================
+ID: 110
+Circuito: Suzuka
+Fecha: 20260315
+Estado: Finalizada
+Cantidad de resultados: 4
+
+Resultados:
+Posicion 1 - Piloto ID 648
+Posicion 2 - Piloto ID 497
+Posicion 3 - Piloto ID 500
+Posicion 4 - Piloto ID 192
+
+=====================================
+ID: 120
+Circuito: Red Bull Ring
+Fecha: 20260411
+Estado: Finalizada
+Cantidad de resultados: 6
+
+Resultados:
+Posicion 1 - Piloto ID 648
+Posicion 2 - Piloto ID 846
+Posicion 3 - Piloto ID 873
+Posicion 4 - Piloto ID 752
+Posicion 5 - Piloto ID 701
+Posicion 6 - Piloto ID 497
+
+=====================================
+ID: 121
+Circuito: Monaco
+Fecha: 20260501
+Estado: Suspendida
+Cantidad de resultados: 0
+
+=====================================
+ID: 125
+Circuito: Interlagos
+Fecha: 20260714
+Estado: Finalizada
+Cantidad de resultados: 5
+
+Resultados:
+Posicion 1 - Piloto ID 497
+Posicion 2 - Piloto ID 648
+Posicion 3 - Piloto ID 600
+Posicion 4 - Piloto ID 568
+Posicion 5 - Piloto ID 599
+

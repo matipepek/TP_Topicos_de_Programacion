@@ -78,13 +78,10 @@ int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorige
 {
     tPiloto Pilotos;
     tEstadisticaPiloto Estadistica;
-    tIndicePiloto Indice;
-    unsigned cont = 0;
     char cadena[BUFFER];
     FILE* pf = fopen(nombrearchivoorigen, "rt");
     FILE* pf2 = fopen(nombrearchivodestino, "wb");
     FILE* pf3 = fopen ("estadisticas.bin", "wb");
-    FILE* pf4 = fopen ("indicepilotos.bin", "wb");
 
     if(!pf)
     {
@@ -104,14 +101,6 @@ int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorige
         return ERROR_APERTURA;
     }
 
-    if(!pf4)
-    {
-        fclose(pf);
-        fclose(pf2);
-        fclose(pf3);
-        return ERROR_APERTURA;
-    }
-
     while(fgets(cadena, BUFFER, pf))
     {
         trozadoCampoVariablePilotos(cadena, &Pilotos);
@@ -122,20 +111,14 @@ int pilotosABin(const char* nombrearchivodestino, const char* nombrearchivoorige
         Estadistica.suma_posiciones = 0;
         Estadistica.victorias = 0;
 
-        Indice.id = Pilotos.id;
-        Indice.indice = cont;
-        cont++;
-
         mostrarPilotos(&Pilotos);
         fwrite(&Estadistica, sizeof(Estadistica),1, pf3);
-        fwrite(&Indice, sizeof(Indice), 1, pf4);
         fwrite(&Pilotos, sizeof(Pilotos), 1, pf2);
     }
 
     fclose(pf);
     fclose(pf2);
     fclose(pf3);
-    fclose(pf4);
     return TODO_OK;
 }
 
